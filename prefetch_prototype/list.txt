@@ -1,0 +1,294 @@
+
+  gfx1030:0 : GRBM_COUNT : Tie High - Count Number of Clocks
+ : Tie High - Count Number of Clocks
+      block GRBM can only handle 2 counters at a time
+
+  gfx1030:0 : GRBM_GUI_ACTIVE : The GUI is Active
+ : The GUI is Active
+      block GRBM can only handle 2 counters at a time
+
+  gfx1030:0 : GRBM_CP_BUSY : Any of the Command Processor (CPG/CPC/CPF) blocks are busy.
+ : Any of the Command Processor (CPG/CPC/CPF) blocks are busy.
+      block GRBM can only handle 2 counters at a time
+
+  gfx1030:0 : GRBM_SPI_BUSY : Any of the Shader Pipe Interpolators (SPI) are busy in the shader engine(s).
+ : Any of the Shader Pipe Interpolators (SPI) are busy in the shader engine(s).
+      block GRBM can only handle 2 counters at a time
+
+  gfx1030:0 : GRBM_TA_BUSY : Any of the Texture Pipes (TA) are busy in the shader engine(s).
+ : Any of the Texture Pipes (TA) are busy in the shader engine(s).
+      block GRBM can only handle 2 counters at a time
+
+  gfx1030:0 : GRBM_GDS_BUSY : The Global Data Share (GDS) is busy.
+ : The Global Data Share (GDS) is busy.
+      block GRBM can only handle 2 counters at a time
+
+  gfx1030:0 : GRBM_EA_BUSY : The Efficiency Arbiter (EA) block is busy.
+ : The Efficiency Arbiter (EA) block is busy.
+      block GRBM can only handle 2 counters at a time
+
+  gfx1030:0 : GRBM_GL2CC_BUSY : The GL2CC block is busy.
+ : The GL2CC block is busy.
+      block GRBM can only handle 2 counters at a time
+
+  gfx1030:0 : GL2C_HIT : Number of cache hits
+[0-15] : Number of cache hits
+      block GL2C can only handle 4 counters at a time
+
+  gfx1030:0 : GL2C_MISS : Number of cache misses.  UC reads count as misses.
+[0-15] : Number of cache misses.  UC reads count as misses.
+      block GL2C can only handle 4 counters at a time
+
+  gfx1030:0 : GL2C_MC_WRREQ : Number of transactions (either 32-byte or 64-byte) going over the GL2C_EA_wrreq interface. Atomics may travel over the same interface and are generally classified as write requests. This does not include probe commands
+[0-15] : Number of transactions (either 32-byte or 64-byte) going over the GL2C_EA_wrreq interface. Atomics may travel over the same interface and are generally classified as write requests. This does not include probe commands
+      block GL2C can only handle 4 counters at a time
+
+  gfx1030:0 : GL2C_EA_WRREQ_64B : Number of 64-byte transactions going (64-byte write or CMPSWAP) over the TC_EA_wrreq interface.
+[0-15] : Number of 64-byte transactions going (64-byte write or CMPSWAP) over the TC_EA_wrreq interface.
+      block GL2C can only handle 4 counters at a time
+
+  gfx1030:0 : GL2C_MC_WRREQ_STALL : Number of cycles a write request was stalled.
+[0-15] : Number of cycles a write request was stalled.
+      block GL2C can only handle 4 counters at a time
+
+  gfx1030:0 : GL2C_MC_RDREQ : Number of GL2C/EA read requests (either 32-byte or 64-byte or 128-byte).
+[0-15] : Number of GL2C/EA read requests (either 32-byte or 64-byte or 128-byte).
+      block GL2C can only handle 4 counters at a time
+
+  gfx1030:0 : GL2C_EA_RDREQ_32B : Number of 32-byte GL2C/EA read requests
+[0-15] : Number of 32-byte GL2C/EA read requests
+      block GL2C can only handle 4 counters at a time
+
+  gfx1030:0 : GL2C_EA_RDREQ_64B : Number of 64-byte GL2C/EA read requests
+[0-15] : Number of 64-byte GL2C/EA read requests
+      block GL2C can only handle 4 counters at a time
+
+  gfx1030:0 : GL2C_EA_RDREQ_96B : Number of 96-byte GL2C/EA read requests
+[0-15] : Number of 96-byte GL2C/EA read requests
+      block GL2C can only handle 4 counters at a time
+
+  gfx1030:0 : GL2C_EA_RDREQ_128B : Number of 128-byte GL2C/EA read requests
+[0-15] : Number of 128-byte GL2C/EA read requests
+      block GL2C can only handle 4 counters at a time
+
+  gfx1030:0 : SQ_ACCUM_PREV : For counter N, increment by the value of counter N-1.
+ : For counter N, increment by the value of counter N-1.
+      block SQ can only handle 8 counters at a time
+
+  gfx1030:0 : SQ_BUSY_CYCLES : Clock cycles while SQ is reporting that it is busy. {nondeterministic, global, C2}
+ : Clock cycles while SQ is reporting that it is busy. {nondeterministic, global, C2}
+      block SQ can only handle 8 counters at a time
+
+  gfx1030:0 : SQ_WAVES : Count number of waves sent to SQs. {emulated, global, C1}
+ : Count number of waves sent to SQs. {emulated, global, C1}
+      block SQ can only handle 8 counters at a time
+
+  gfx1030:0 : SQ_LEVEL_WAVES : Track the aggregated number of waves over certain period of time, Set next counter to ACCUM_PREV and divide by SQ_PERF_SEL_WAVES for average wave life.
+ : Track the aggregated number of waves over certain period of time, Set next counter to ACCUM_PREV and divide by SQ_PERF_SEL_WAVES for average wave life.
+      block SQ can only handle 8 counters at a time
+
+  gfx1030:0 : SQ_WAVE_CYCLES : Number of clock cycles spent by waves in the SQs. Incremented by # of living (valid) waves each cycle. {nondeterministic, C1}
+ : Number of clock cycles spent by waves in the SQs. Incremented by # of living (valid) waves each cycle. {nondeterministic, C1}
+      block SQ can only handle 8 counters at a time
+
+  gfx1030:0 : SQ_WAIT_INST_ANY : Number of clock cycles spent waiting for any instruction issue. In units of cycles. {nondeterministic}
+ : Number of clock cycles spent waiting for any instruction issue. In units of cycles. {nondeterministic}
+      block SQ can only handle 8 counters at a time
+
+  gfx1030:0 : SQ_WAIT_ANY : Number of clock cycles spent waiting for anything. {nondeterministic, C1}
+ : Number of clock cycles spent waiting for anything. {nondeterministic, C1}
+      block SQ can only handle 8 counters at a time
+
+  gfx1030:0 : SQ_INSTS_WAVE32 : Number of wave32 instructions issued, for flat, lds, valu, tex. {emulated, C1}
+ : Number of wave32 instructions issued, for flat, lds, valu, tex. {emulated, C1}
+      block SQ can only handle 8 counters at a time
+
+  gfx1030:0 : SQ_INSTS_WAVE32_LDS : Number of wave32 LDS indexed instructions issued. Wave64 may count 1 or 2, depending on what gets issued. {emulated, C1}
+ : Number of wave32 LDS indexed instructions issued. Wave64 may count 1 or 2, depending on what gets issued. {emulated, C1}
+      block SQ can only handle 8 counters at a time
+
+  gfx1030:0 : SQ_INSTS_WAVE32_VALU : Number of wave32 valu instructions issued. Wave64 may count 1 or 2, depending on what gets issued. {emulated, C1}
+ : Number of wave32 valu instructions issued. Wave64 may count 1 or 2, depending on what gets issued. {emulated, C1}
+      block SQ can only handle 8 counters at a time
+
+  gfx1030:0 : SQ_WAVE32_INSTS : Number of instructions issued by wave32 waves. Skipped instructions are not counted. {emulated}
+ : Number of instructions issued by wave32 waves. Skipped instructions are not counted. {emulated}
+      block SQ can only handle 8 counters at a time
+
+  gfx1030:0 : SQ_WAVE64_INSTS : Number of instructions issued by wave64 waves. Skipped instructions are not counted. {emulated}
+ : Number of instructions issued by wave64 waves. Skipped instructions are not counted. {emulated}
+      block SQ can only handle 8 counters at a time
+
+  gfx1030:0 : SQ_INST_LEVEL_GDS : Number of in-flight GDS instructions. Set next counter to ACCUM_PREV and divide by INSTS_GDS for average latency. {level, nondeterministic, C1}
+ : Number of in-flight GDS instructions. Set next counter to ACCUM_PREV and divide by INSTS_GDS for average latency. {level, nondeterministic, C1}
+      block SQ can only handle 8 counters at a time
+
+  gfx1030:0 : SQ_INST_LEVEL_LDS : Number of in-flight LDS instructions. Set next counter to ACCUM_PREV and divide by INSTS_LDS for average latency. Includes FLAT instructions. {level, nondeterministic, C1}
+ : Number of in-flight LDS instructions. Set next counter to ACCUM_PREV and divide by INSTS_LDS for average latency. Includes FLAT instructions. {level, nondeterministic, C1}
+      block SQ can only handle 8 counters at a time
+
+  gfx1030:0 : SQ_INST_CYCLES_VMEM : Number of cycles needed to send addr and data for VMEM (lds, buffer, image, flat, scratch, global) instructions, windowed by perf_en. {emulated, C1}
+ : Number of cycles needed to send addr and data for VMEM (lds, buffer, image, flat, scratch, global) instructions, windowed by perf_en. {emulated, C1}
+      block SQ can only handle 8 counters at a time
+
+  gfx1030:0 : SQC_LDS_BANK_CONFLICT : Number of cycles LDS is stalled by bank conflicts. (emulated, C1)
+ : Number of cycles LDS is stalled by bank conflicts. (emulated, C1)
+      block SQ can only handle 8 counters at a time
+
+  gfx1030:0 : SQC_LDS_IDX_ACTIVE : Number of cycles LDS is used for indexed (non-direct,non-interpolation) operations. {per-simd, emulated, C1}
+ : Number of cycles LDS is used for indexed (non-direct,non-interpolation) operations. {per-simd, emulated, C1}
+      block SQ can only handle 8 counters at a time
+
+  gfx1030:0 : SQ_INSTS_VALU : Number of VALU instructions issued excluding skipped instructions. {emulated, C1}
+ : Number of VALU instructions issued excluding skipped instructions. {emulated, C1}
+      block SQ can only handle 8 counters at a time
+
+  gfx1030:0 : SQ_INSTS_SALU : Number of SALU instructions issued. {emulated, C1}
+ : Number of SALU instructions issued. {emulated, C1}
+      block SQ can only handle 8 counters at a time
+
+  gfx1030:0 : SQ_INSTS_SMEM : Number of SMEM instructions issued. {emulated, C1}
+ : Number of SMEM instructions issued. {emulated, C1}
+      block SQ can only handle 8 counters at a time
+
+  gfx1030:0 : SQ_INSTS_FLAT : Number of FLAT instructions issued. {emulated, C2}
+ : Number of FLAT instructions issued. {emulated, C2}
+      block SQ can only handle 8 counters at a time
+
+  gfx1030:0 : SQ_INSTS_LDS : Number of LDS indexed instructions issued. {emulated, C1}
+ : Number of LDS indexed instructions issued. {emulated, C1}
+      block SQ can only handle 8 counters at a time
+
+  gfx1030:0 : SQ_INSTS_GDS : Number of GDS instructions issued. {emulated, C1}
+ : Number of GDS instructions issued. {emulated, C1}
+      block SQ can only handle 8 counters at a time
+
+  gfx1030:0 : SQ_WAIT_INST_LDS : Number of clock cycles spent waiting for LDS (indexed) instruction issue. In units of cycles. {nondeterministic, C1}
+ : Number of clock cycles spent waiting for LDS (indexed) instruction issue. In units of cycles. {nondeterministic, C1}
+      block SQ can only handle 8 counters at a time
+
+  gfx1030:0 : TA_TA_BUSY : TA block is busy. Perf_Windowing not supported for this counter.
+[0-15] : TA block is busy. Perf_Windowing not supported for this counter.
+      block TA can only handle 2 counters at a time
+
+  gfx1030:0 : TA_FLAT_LOAD_WAVEFRONTS :  Number of flat load vec32 packets processed by TA, same as flat_read_wavefronts in earlier IP
+[0-15] :  Number of flat load vec32 packets processed by TA, same as flat_read_wavefronts in earlier IP
+      block TA can only handle 2 counters at a time
+
+  gfx1030:0 : TA_FLAT_STORE_WAVEFRONTS : Number of flat store vec32 packets processed by TA, same as flat_write_wavefronts in earlier IP
+[0-15] : Number of flat store vec32 packets processed by TA, same as flat_write_wavefronts in earlier IP
+      block TA can only handle 2 counters at a time
+
+  gfx1030:0 : KERNEL_DURATION : The duration of the kernel dispatch
+      KERNEL_DURATION = 1
+
+  gfx1030:0 : MeanOccupancyPerCU : Mean occupancy per compute unit.
+      MeanOccupancyPerCU = GRBM_COUNT*0+SQ_LEVEL_WAVES*0+SQ_ACCUM_PREV/GRBM_GUI_ACTIVE/CU_NUM
+
+  gfx1030:0 : MeanOccupancyPerActiveCU : Mean occupancy per active compute unit.
+      MeanOccupancyPerActiveCU = GRBM_COUNT*0+SQ_LEVEL_WAVES*0+SQ_ACCUM_PREV*4/SQ_BUSY_CYCLES/CU_NUM
+
+  gfx1030:0 : GPU_UTIL : Percentage of the time that GUI is active
+      GPU_UTIL = 100*GRBM_GUI_ACTIVE/GRBM_COUNT
+
+  gfx1030:0 : CP_UTIL : Percentage of the GRBM_GUI_ACTIVE time that any of the Command Processor (CPG/CPC/CPF) blocks are busy
+      CP_UTIL = 100*GRBM_CP_BUSY/GRBM_GUI_ACTIVE
+
+  gfx1030:0 : SPI_UTIL : Percentage of the GRBM_GUI_ACTIVE time that any of the Shader Pipe Interpolators (SPI) are busy in the shader engine(s)
+      SPI_UTIL = 100*GRBM_SPI_BUSY/GRBM_GUI_ACTIVE
+
+  gfx1030:0 : TA_UTIL : Percentage of the GRBM_GUI_ACTIVE time that any of the Texture Pipes (TA) are busy in the shader engine(s).
+      TA_UTIL = 100*GRBM_TA_BUSY/GRBM_GUI_ACTIVE
+
+  gfx1030:0 : GDS_UTIL : Percentage of the GRBM_GUI_ACTIVE time that the Global Data Share (GDS) is busy.
+      GDS_UTIL = 100*GRBM_GDS_BUSY/GRBM_GUI_ACTIVE
+
+  gfx1030:0 : EA_UTIL : Percentage of the GRBM_GUI_ACTIVE time that the Efficiency Arbiter (EA) block is busy.
+      EA_UTIL = 100*GRBM_EA_BUSY/GRBM_GUI_ACTIVE
+
+  gfx1030:0 : WAVE_DEP_WAIT : Percentage of the SQ_WAVE_CYCLE time spent waiting for anything.
+      WAVE_DEP_WAIT = 100*SQ_WAIT_ANY/SQ_WAVE_CYCLES
+
+  gfx1030:0 : WAVE_ISSUE_WAIT : Percentage of the SQ_WAVE_CYCLE time spent waiting for any instruction issue.
+      WAVE_ISSUE_WAIT = 100*SQ_WAIT_INST_ANY/SQ_WAVE_CYCLES
+
+  gfx1030:0 : TA_BUSY_avr : TA block is busy. Average over TA instances.
+      TA_BUSY_avr = avr(TA_TA_BUSY,16)
+
+  gfx1030:0 : TA_BUSY_max : TA block is busy. Max over TA instances.
+      TA_BUSY_max = max(TA_TA_BUSY,16)
+
+  gfx1030:0 : TA_BUSY_min : TA block is busy. Min over TA instances.
+      TA_BUSY_min = min(TA_TA_BUSY,16)
+
+  gfx1030:0 : TA_FLAT_LOAD_WAVEFRONTS_sum : Number of flat load vec32 packets processed by the TA. Sum over TA instances.
+      TA_FLAT_LOAD_WAVEFRONTS_sum = sum(TA_FLAT_LOAD_WAVEFRONTS,16)
+
+  gfx1030:0 : TA_FLAT_STORE_WAVEFRONTS_sum : Number of flat store vec32 packets processed by the TA. Sum over TA instances.
+      TA_FLAT_STORE_WAVEFRONTS_sum = sum(TA_FLAT_STORE_WAVEFRONTS,16)
+
+  gfx1030:0 : GL2C_HIT_sum : Number of cache hits. Sum over GL2C instances.
+      GL2C_HIT_sum = sum(GL2C_HIT,16)
+
+  gfx1030:0 : GL2C_MISS_sum : Number of cache misses. Sum over GL2C instances.
+      GL2C_MISS_sum = sum(GL2C_MISS,16)
+
+  gfx1030:0 : GL2C_EA_RDREQ_32B_sum : Number of 32-byte GL2C/EA read requests. Sum over GL2C instances.
+      GL2C_EA_RDREQ_32B_sum = sum(GL2C_EA_RDREQ_32B,16)
+
+  gfx1030:0 : GL2C_EA_RDREQ_64B_sum : Number of 64-byte GL2C/EA read requests. Sum over GL2C instances.
+      GL2C_EA_RDREQ_64B_sum = sum(GL2C_EA_RDREQ_64B,16)
+
+  gfx1030:0 : GL2C_EA_RDREQ_96B_sum : Number of 96-byte GL2C/EA read requests. Sum over GL2C instances.
+      GL2C_EA_RDREQ_96B_sum = sum(GL2C_EA_RDREQ_96B,16)
+
+  gfx1030:0 : GL2C_EA_RDREQ_128B_sum : Number of 128-byte GL2C/EA read requests. Sum over GL2C instances.
+      GL2C_EA_RDREQ_128B_sum = sum(GL2C_EA_RDREQ_128B,16)
+
+  gfx1030:0 : GL2C_MC_RDREQ_sum : Number of GL2C/EA read requests (either 32-byte or 64-byte or 128-byte). Sum over GL2C instances.
+      GL2C_MC_RDREQ_sum = sum(GL2C_MC_RDREQ,16)
+
+  gfx1030:0 : GL2C_MC_WRREQ_sum : Number of transactions (either 32-byte or 64-byte) going over the GL2C_MC_wrreq interface. Sum over GL2C instances.
+      GL2C_MC_WRREQ_sum = sum(GL2C_MC_WRREQ,16)
+
+  gfx1030:0 : GL2C_EA_WRREQ_64B_sum : Number of 64-byte transactions going (64-byte write or CMPSWAP) over the GL2C_EA_wrreq interface. Sum over GL2C instances.
+      GL2C_EA_WRREQ_64B_sum = sum(GL2C_EA_WRREQ_64B,16)
+
+  gfx1030:0 : GL2C_WRREQ_STALL_max : Number of cycles a write request was stalled. Max over GL2C instances.
+      GL2C_WRREQ_STALL_max = max(GL2C_MC_WRREQ_STALL,16)
+
+  gfx1030:0 : L2CacheHit : The percentage of fetch, write, atomic, and other instructions that hit the data in L2 cache. Value range: 0% (no hit) to 100% (optimal).
+      L2CacheHit = 100*sum(GL2C_HIT,16)/(sum(GL2C_HIT,16)+sum(GL2C_MISS,16))
+
+  gfx1030:0 : FETCH_SIZE : The total kilobytes fetched from the video memory. This is measured with all extra fetches and any cache or memory effects taken into account.
+      FETCH_SIZE = (GL2C_EA_RDREQ_32B_sum*32+GL2C_EA_RDREQ_64B_sum*64+GL2C_EA_RDREQ_96B_sum*96+GL2C_EA_RDREQ_128B_sum*128)/1024
+
+  gfx1030:0 : WriteUnitStalled : The percentage of GPUTime the Write unit is stalled. Value range: 0% to 100% (bad).
+      WriteUnitStalled = 100*GL2C_WRREQ_STALL_max/GRBM_GUI_ACTIVE
+
+  gfx1030:0 : LDSBankConflict : The percentage of GPUTime LDS is stalled by bank conflicts. Value range: 0% (optimal) to 100% (bad).
+      LDSBankConflict = 100*SQC_LDS_BANK_CONFLICT/SQC_LDS_IDX_ACTIVE
+
+  gfx1030:0 : GPUBusy : The percentage of time GPU was busy.
+      GPUBusy = 100*GRBM_GUI_ACTIVE/GRBM_COUNT
+
+  gfx1030:0 : Wavefronts : Total wavefronts.
+      Wavefronts = SQ_WAVES
+
+  gfx1030:0 : VALUInsts : The average number of vector ALU instructions executed per work-item (affected by flow control).
+      VALUInsts = SQ_INSTS_VALU/SQ_WAVES
+
+  gfx1030:0 : SALUInsts : The average number of scalar ALU instructions executed per work-item (affected by flow control).
+      SALUInsts = SQ_INSTS_SALU/SQ_WAVES
+
+  gfx1030:0 : SFetchInsts : The average number of scalar fetch instructions from the video memory executed per work-item (affected by flow control).
+      SFetchInsts = SQ_INSTS_SMEM/SQ_WAVES
+
+  gfx1030:0 : GDSInsts : The average number of GDS read or GDS write instructions executed per work item (affected by flow control).
+      GDSInsts = SQ_INSTS_GDS/SQ_WAVES
+
+  gfx1030:0 : MemUnitBusy : The percentage of GPUTime the memory unit is active. The result includes the stall time (MemUnitStalled). This is measured with all extra fetches and writes and any cache or memory effects taken into account. Value range: 0% to 100% (fetch-bound).
+      MemUnitBusy = 100*max(TA_TA_BUSY,16)/GRBM_GUI_ACTIVE/SE_NUM
+
+  gfx1030:0 : ALUStalledByLDS : The percentage of GPUTime ALU units are stalled by the LDS input queue being full or the output queue being not ready. If there are LDS bank conflicts, reduce them. Otherwise, try reducing the number of LDS accesses if possible. Value range: 0% (optimal) to 100% (bad).
+      ALUStalledByLDS = 100*SQ_WAIT_INST_LDS*4/SQ_WAVES/GRBM_GUI_ACTIVE
