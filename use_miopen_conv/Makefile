@@ -7,8 +7,8 @@ OBJECTS_0 = $(SOURCES_0:.cpp=.o)
 SOURCES_1 = conv_add_async_copy.cpp
 OBJECTS_1 = $(SOURCES_1:.cpp=.o)
 
-EXECUTABLE_0=./conv_add_sync_copy
-EXECUTABLE_1=./conv_add_async_copy
+EXECUTABLE_0=./conv_add_sync_copy.exe
+EXECUTABLE_1=./conv_add_async_copy.exe
 
 .PHONY: test
 
