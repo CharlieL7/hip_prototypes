@@ -19,7 +19,7 @@ sync_copy: $(EXECUTABLE_0)
 
 async_copy: $(EXECUTABLE_1)
 
-CXXFLAGS =-g
+CXXFLAGS =-g -std=c++17
 CXX=$(HIPCC)
 
 $(EXECUTABLE_0): $(OBJECTS_0)
@@ -27,3 +27,9 @@ $(EXECUTABLE_0): $(OBJECTS_0)
 
 $(EXECUTABLE_1): $(OBJECTS_1)
 	$(HIPCC) $(OBJECTS_1) -o $@
+
+clean:
+	rm -f $(OBJECTS_0)
+	rm -f $(OBJECTS_1)
+	rm -f $(EXECUTABLE_0)
+	rm -f $(EXECUTABLE_1)
