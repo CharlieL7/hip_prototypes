@@ -1,11 +1,10 @@
-#ifndef  KERNELS_HPP
-#define KERNELS_HPP
+#ifndef COMMON_HPP
+#define COMMON_HPP
 
 #include <hip/hip_runtime.h>
 #include <algorithm>
 #include <vector>
 #include <array>
-
 
 #define HIP_CHECK(command){ \
     hipError_t status = command; \

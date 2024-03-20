@@ -1,15 +1,7 @@
 #include <random>
 #include <iostream>
 #include <hip/hip_runtime.h>
-#include "kernels.hpp"
-
-#define HIP_CHECK(command){ \
-    hipError_t status = command; \
-    if(status != hipSuccess) { \
-        std::cerr << "Error: HIP reports " << hipGetErrorString(status) << std::endl; \
-        std::abort(); \
-    } \
-}
+#include "common.hpp"
 
 /**
  * Calculation:
@@ -21,7 +13,7 @@
  */
 int main(int argc, char * argv[])
 {
-    
+    using data_type = float;
     // input buffer sizes
     std::size_t batch_size = 1;
     std::size_t in_channels = 4;
@@ -37,11 +29,11 @@ int main(int argc, char * argv[])
     std::size_t conv_output_size = batch_size * out_channels * in_height * in_width;
     std::size_t kernel_size = out_channels * in_channels *  kernel_height * kernel_width;
 
-    std::vector<float> A_vec(conv_input_size);
-    std::vector<float> W_vec(kernel_size);
-    std::vector<float> B_vec(conv_output_size);
-    std::vector<float> C_vec(conv_output_size);
-    std::vector<float> D_vec(conv_output_size);
+    std::vector<data_type> A_vec(conv_input_size);
+    std::vector<data_type> W_vec(kernel_size);
+    std::vector<data_type> B_vec(conv_output_size);
+    std::vector<data_type> C_vec(conv_output_size);
+    std::vector<data_type> D_vec(conv_output_size);
 
     // fill A, W, and C with random data
     std::random_device rd;
@@ -49,24 +41,24 @@ int main(int argc, char * argv[])
     std::uniform_real_distribution<> distrib(0.0, 1.0);
     std::generate(A_vec.begin(), A_vec.end(), [&](){return distrib(gen);});
     std::generate(W_vec.begin(), W_vec.end(), [&](){return distrib(gen);});
-    //std::generate(C_vec.begin(), C_vec.end(), [&](){return distrib(gen);});
+    std::generate(C_vec.begin(), C_vec.end(), [&](){return distrib(gen);});
     
     // Debug: fill with 1's and 0's
     //std::generate(A_vec.begin(), A_vec.end(), [&](){return 1.0;});
     //std::generate(W_vec.begin(), W_vec.end(), [&](){return 1.0;});
-    std::generate(C_vec.begin(), C_vec.end(), [&](){return 0.0;});
+    //std::generate(C_vec.begin(), C_vec.end(), [&](){return 0.0;});
 
     // set up device buffers
-    float* gpu_A;
-    float* gpu_W;
-    float* gpu_B;
-    float* gpu_C;
-    float* gpu_D;
-    std::size_t bytes_A = A_vec.size() * sizeof(float);
-    std::size_t bytes_W = W_vec.size() * sizeof(float);
-    std::size_t bytes_B = B_vec.size() * sizeof(float);
-    std::size_t bytes_C = C_vec.size() * sizeof(float);
-    std::size_t bytes_D = D_vec.size() * sizeof(float);
+    data_type* gpu_A;
+    data_type* gpu_W;
+    data_type* gpu_B;
+    data_type* gpu_C;
+    data_type* gpu_D;
+    std::size_t bytes_A = A_vec.size() * sizeof(data_type);
+    std::size_t bytes_W = W_vec.size() * sizeof(data_type);
+    std::size_t bytes_B = B_vec.size() * sizeof(data_type);
+    std::size_t bytes_C = C_vec.size() * sizeof(data_type);
+    std::size_t bytes_D = D_vec.size() * sizeof(data_type);
     HIP_CHECK(hipMalloc(&gpu_A, bytes_A));
     HIP_CHECK(hipMalloc(&gpu_W, bytes_W));
     HIP_CHECK(hipMalloc(&gpu_B, bytes_B));
@@ -74,7 +66,7 @@ int main(int argc, char * argv[])
     HIP_CHECK(hipMalloc(&gpu_D, bytes_D));
 
     // set up threads
-    std::size_t block_size = 300;
+    std::size_t block_size = 220;
     std::size_t conv_grid_size = out_channels;
     
     // blocking copies
@@ -82,7 +74,7 @@ int main(int argc, char * argv[])
     HIP_CHECK(hipMemcpy(gpu_W, W_vec.data(), bytes_W, hipMemcpyHostToDevice));
     HIP_CHECK(hipMemcpy(gpu_C, C_vec.data(), bytes_C, hipMemcpyHostToDevice));
     
-    auto conv_kernel = naive_conv_fwd_nchw<true, float, float, float>;
+    auto conv_kernel = naive_conv_fwd_nchw<true, data_type, data_type, data_type>;
     hipLaunchKernelGGL(conv_kernel,
         dim3(conv_grid_size),
         dim3(block_size),
@@ -112,7 +104,7 @@ int main(int argc, char * argv[])
         1 // groups
     );
 
-    auto add_kernel = vector_add<float, int>;
+    auto add_kernel = vector_add<data_type, int>;
     std::size_t add_grid_size = (conv_output_size + block_size - 1) / block_size;
     hipLaunchKernelGGL(add_kernel,
         dim3(add_grid_size),
@@ -134,7 +126,7 @@ int main(int argc, char * argv[])
     HIP_CHECK(hipFree(gpu_D));
     HIP_CHECK(hipFree(gpu_W));
 
-    auto ref_vals = ref_convolution_add<float, float>(A_vec, W_vec, C_vec, in_height, in_width, out_channels, in_channels, kernel_width, kernel_height);
+    auto ref_vals = ref_convolution_add<data_type, data_type>(A_vec, W_vec, C_vec, in_height, in_width, out_channels, in_channels, kernel_width, kernel_height);
     
     if(
         std::equal(
@@ -149,7 +141,7 @@ int main(int argc, char * argv[])
     }
     else
     {
-        std::cout<<"Failed\n";
+        std::cout<<"Failed!\n";
     }
     
     // Debug: print vectors
