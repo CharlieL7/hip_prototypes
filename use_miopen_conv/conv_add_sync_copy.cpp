@@ -1,5 +1,6 @@
 #include <random>
 #include <iostream>
+#include <sstream>
 #include <hip/hip_runtime.h>
 #include "common.hpp"
 
@@ -13,6 +14,13 @@
  */
 int main(int argc, char * argv[])
 {
+    bool use_wg_reversal = false;
+    if(argc == 2)
+    {
+        std::stringstream ss(argv[1]);
+        ss >> std::boolalpha >> use_wg_reversal;
+    }
+
     using data_type = float;
     // input buffer sizes
     std::size_t batch_size = 1;
@@ -107,8 +115,12 @@ int main(int argc, char * argv[])
         kernel_width,
         1 // groups
     );
-
-    auto add_kernel = vector_add<data_type, int>;
+    
+    auto add_kernel = vector_add<false, data_type, int>;
+    if(use_wg_reversal)
+    {
+        add_kernel = vector_add<true, data_type, int>;
+    }
     std::size_t add_grid_size = (conv_output_size + block_size - 1) / block_size;
     hipLaunchKernelGGL(add_kernel,
         dim3(add_grid_size),

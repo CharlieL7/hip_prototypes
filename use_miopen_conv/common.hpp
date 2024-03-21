@@ -168,14 +168,23 @@ __global__ void naive_conv_fwd_nchw(
     }
 }
 
-template <typename VecType, typename DimType>
+template <bool WG_REVERSAL, typename VecType, typename DimType>
 __global__ void vector_add(
     const VecType* __restrict__ a,
     const VecType* __restrict__ b,
     VecType* __restrict__ c,
     DimType len) 
 {
-    int i = blockIdx.x * blockDim.x + threadIdx.x;
+    int i = 0;
+    if constexpr(WG_REVERSAL)
+    {
+        int flipped_block_idx = gridDim.x - blockIdx.x - 1;
+        i = flipped_block_idx * blockDim.x + threadIdx.x;
+    }
+    else
+    {
+        i = blockIdx.x * blockDim.x + threadIdx.x;
+    }
     if (i < len)
     {
         c[i] = a[i] + b[i];
