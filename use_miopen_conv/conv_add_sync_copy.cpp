@@ -21,6 +21,8 @@ int main(int argc, char * argv[])
         ss >> std::boolalpha >> use_wg_reversal;
     }
 
+    std::cout << "use_wg_reversal: " << use_wg_reversal << "\n";
+
     using data_type = float;
     // input buffer sizes
     std::size_t batch_size = 1;
