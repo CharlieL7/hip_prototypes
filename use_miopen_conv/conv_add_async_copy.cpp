@@ -16,14 +16,18 @@ int main(int argc, char * argv[])
     using data_type = float;
     // input buffer sizes
     std::size_t batch_size = 1;
-    std::size_t in_channels = 4;
-    std::size_t in_width = 10;
-    std::size_t in_height = 10;
+    std::size_t in_channels = 1024;
+    std::size_t in_width = 64;
+    std::size_t in_height = 64;
 
     // kernel buffer sizes
     std::size_t kernel_width = 3;
     std::size_t kernel_height = 3;
-    std::size_t out_channels = 2; // AKA: number of filters
+    std::size_t out_channels = 1024; // AKA: number of filters
+
+    std::cout << "A_dims: [" << batch_size << ", " << in_channels << ", " << in_height << ", " << in_width << "]\n";
+    std::cout << "W_dims: [" << out_channels << ", " << in_channels << ", " << kernel_height << ", " << kernel_width << "]\n";
+    std::cout << "C_dims: [" << batch_size << ", " << out_channels << ", " << in_height << ", " << in_width << "]\n";
 
     std::size_t conv_input_size = batch_size * in_channels * in_height * in_width;
     std::size_t conv_output_size = batch_size * out_channels * in_height * in_width;

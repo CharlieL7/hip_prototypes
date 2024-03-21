@@ -1,1 +1,1 @@
-pmc: L2CacheHit, MemUnitBusy, Wavefronts 
+pmc: TCC_HIT_sum, TCC_MISS_sum, MemUnitBusy, Wavefronts 
