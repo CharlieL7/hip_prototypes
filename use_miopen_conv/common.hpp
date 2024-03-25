@@ -191,6 +191,18 @@ __global__ void vector_add(
     }
 }
 
+template <typename VecType, typename DimType>
+__global__ void add_one(
+    VecType* __restrict__ x,
+    DimType len)
+{
+    i = blockIdx.x * blockDim.x + threadIdx.x;
+    if (i < len)
+    {
+        c[i] = c[i] + 1;
+    }
+}
+
 template <typename T, typename AccType>
 std::vector<T> ref_convolution_add(
     const std::vector<T>& A,
