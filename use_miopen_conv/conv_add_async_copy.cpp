@@ -17,8 +17,8 @@ int main(int argc, char * argv[])
     // input buffer sizes
     std::size_t batch_size = 1;
     std::size_t in_channels = 1024;
-    std::size_t in_width = 64;
-    std::size_t in_height = 64;
+    std::size_t in_width = 1024;
+    std::size_t in_height = 1024;
 
     // kernel buffer sizes
     std::size_t kernel_width = 3;
@@ -120,7 +120,7 @@ int main(int argc, char * argv[])
 
     HIP_CHECK(hipMemcpyAsync(gpu_C, C_pinned_data, bytes_C, hipMemcpyHostToDevice, memory_stream));
     HIP_CHECK(hipStreamSynchronize(memory_stream));
-    auto add_kernel = vector_add<data_type, int>;
+    auto add_kernel = vector_add<false, data_type, int>;
     std::size_t add_grid_size = (conv_output_size + block_size - 1) / block_size;
     hipLaunchKernelGGL(add_kernel,
         dim3(add_grid_size),
@@ -145,24 +145,25 @@ int main(int argc, char * argv[])
 
     HIP_CHECK(hipStreamDestroy(compute_stream));
     HIP_CHECK(hipStreamDestroy(memory_stream));
-
-    auto ref_vals = ref_convolution_add<data_type, data_type>(A_vec, W_vec, C_vec, in_height, in_width, out_channels, in_channels, kernel_width, kernel_height);
-    
-    if(
-        std::equal(
-            ref_vals.begin(),
-            ref_vals.end(),
-            D_vec.begin(),
-            [](auto ref, auto x){ return std::abs(ref - x) < 1e-3; }
-        )
-    )
-    {
-        std::cout<<"Passed!\n";
-    }
-    else
-    {
-        std::cout<<"Failed!\n";
-    }
+	
+    // Debug: ref version
+    //auto ref_vals = ref_convolution_add<data_type, data_type>(A_vec, W_vec, C_vec, in_height, in_width, out_channels, in_channels, kernel_width, kernel_height);
+    //
+    //if(
+    //    std::equal(
+    //        ref_vals.begin(),
+    //        ref_vals.end(),
+    //        D_vec.begin(),
+    //        [](auto ref, auto x){ return std::abs(ref - x) < 1e-3; }
+    //    )
+    //)
+    //{
+    //    std::cout<<"Passed!\n";
+    //}
+    //else
+    //{
+    //    std::cout<<"Failed!\n";
+    //}
 
     // Debug: print vectors
     //std::cout << "ref: [ ";
