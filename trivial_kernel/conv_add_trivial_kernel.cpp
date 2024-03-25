@@ -1,6 +1,5 @@
 #include <random>
 #include <iostream>
-#include <sstream>
 #include <hip/hip_runtime.h>
 #include "common.hpp"
 
@@ -14,15 +13,6 @@
  */
 int main(int argc, char * argv[])
 {
-    bool use_wg_reversal = false;
-    if(argc == 2)
-    {
-        std::stringstream ss(argv[1]);
-        ss >> std::boolalpha >> use_wg_reversal;
-    }
-
-    std::cout << "use_wg_reversal: " << use_wg_reversal << "\n";
-
     using data_type = float;
     // input buffer sizes
     std::size_t batch_size = 1;
@@ -62,6 +52,11 @@ int main(int argc, char * argv[])
     //std::generate(W_vec.begin(), W_vec.end(), [&](){return 1.0;});
     //std::generate(C_vec.begin(), C_vec.end(), [&](){return 0.0;});
 
+    // make C pinned memory
+    data_type* C_pinned_data;
+    HIP_CHECK(hipHostMalloc(&C_pinned_data, C_vec.size() * sizeof(data_type)));
+    std::copy(C_vec.begin(), C_vec.end(), C_pinned_data);
+
     // set up device buffers
     data_type* gpu_A;
     data_type* gpu_W;
@@ -80,8 +75,14 @@ int main(int argc, char * argv[])
     HIP_CHECK(hipMalloc(&gpu_D, bytes_D));
 
     // set up threads
-    std::size_t block_size = 456;
+    std::size_t block_size = 220;
     std::size_t conv_grid_size = out_channels;
+
+    // set up streams
+    hipStream_t conv_stream;
+    hipStream_t prefetch_add_stream;
+    HIP_CHECK(hipStreamCreate(&conv_stream));
+    HIP_CHECK(hipStreamCreate(&prefetch_add_stream));
     
     // blocking copies
     HIP_CHECK(hipMemcpy(gpu_A, A_vec.data(), bytes_A, hipMemcpyHostToDevice));
@@ -118,13 +119,21 @@ int main(int argc, char * argv[])
         1 // groups
     );
 
-    
-    auto add_kernel = vector_add<false, data_type, int>;
-    if(use_wg_reversal)
-    {
-        add_kernel = vector_add<true, data_type, int>;
-    }
     std::size_t add_grid_size = (conv_output_size + block_size - 1) / block_size;
+
+    // trying to prefetch gpu_C results
+    auto add_one_kernel = add_one<float, int>;
+    hipLaunchKernelGGL(add_one_kernel,
+        dim3(add_grid_size),
+        dim3(block_size),
+        0,
+        0,
+        gpu_C,
+        conv_output_size
+    );
+
+    HIP_CHECK(hipStreamSynchronize(conv_stream));
+    auto add_kernel = vector_add<false, data_type, int>;
     hipLaunchKernelGGL(add_kernel,
         dim3(add_grid_size),
         dim3(block_size),
@@ -144,8 +153,12 @@ int main(int argc, char * argv[])
     HIP_CHECK(hipFree(gpu_C));
     HIP_CHECK(hipFree(gpu_D));
     HIP_CHECK(hipFree(gpu_W));
+    HIP_CHECK(hipHostFree(C_pinned_data));
 
-    // Debug ref version
+    HIP_CHECK(hipStreamDestroy(conv_stream));
+    HIP_CHECK(hipStreamDestroy(prefetch_add_stream));
+	
+    // Debug: ref version
     //auto ref_vals = ref_convolution_add<data_type, data_type>(A_vec, W_vec, C_vec, in_height, in_width, out_channels, in_channels, kernel_width, kernel_height);
     //
     //if(
@@ -163,7 +176,7 @@ int main(int argc, char * argv[])
     //{
     //    std::cout<<"Failed!\n";
     //}
-    
+
     // Debug: print vectors
     //std::cout << "ref: [ ";
     //for(auto x : ref_vals)
@@ -177,4 +190,5 @@ int main(int argc, char * argv[])
     //    std::cout << x << ", ";
     //}
     //std::cout << "]\n";
+
 }
