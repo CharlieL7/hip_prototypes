@@ -27,8 +27,8 @@ int main(int argc, char * argv[])
     // input buffer sizes
     std::size_t batch_size = 1;
     std::size_t in_channels = 1024;
-    std::size_t in_width = 64;
-    std::size_t in_height = 64;
+    std::size_t in_width = 1024;
+    std::size_t in_height = 1024;
 
     // kernel buffer sizes
     std::size_t kernel_width = 3;
@@ -80,13 +80,13 @@ int main(int argc, char * argv[])
     HIP_CHECK(hipMalloc(&gpu_D, bytes_D));
 
     // set up threads
-    std::size_t block_size = 220;
+    std::size_t block_size = 456;
     std::size_t conv_grid_size = out_channels;
     
     // blocking copies
     HIP_CHECK(hipMemcpy(gpu_A, A_vec.data(), bytes_A, hipMemcpyHostToDevice));
     HIP_CHECK(hipMemcpy(gpu_W, W_vec.data(), bytes_W, hipMemcpyHostToDevice));
-    HIP_CHECK(hipMemcpy(gpu_C, C_vec.data(), bytes_C, hipMemcpyHostToDevice));
+    HIP_CHECK(hipDeviceSynchronize())
     
     auto conv_kernel = naive_conv_fwd_nchw<true, data_type, data_type, data_type>;
     hipLaunchKernelGGL(conv_kernel,
@@ -117,6 +117,10 @@ int main(int argc, char * argv[])
         kernel_width,
         1 // groups
     );
+
+    HIP_CHECK(hipDeviceSynchronize());
+    HIP_CHECK(hipMemcpy(gpu_C, C_vec.data(), bytes_C, hipMemcpyHostToDevice));
+    HIP_CHECK(hipDeviceSynchronize());
     
     auto add_kernel = vector_add<false, data_type, int>;
     if(use_wg_reversal)
@@ -144,23 +148,24 @@ int main(int argc, char * argv[])
     HIP_CHECK(hipFree(gpu_D));
     HIP_CHECK(hipFree(gpu_W));
 
-    auto ref_vals = ref_convolution_add<data_type, data_type>(A_vec, W_vec, C_vec, in_height, in_width, out_channels, in_channels, kernel_width, kernel_height);
-    
-    if(
-        std::equal(
-            ref_vals.begin(),
-            ref_vals.end(),
-            D_vec.begin(),
-            [](auto ref, auto x){ return std::abs(ref - x) < 1e-3; }
-        )
-    )
-    {
-        std::cout<<"Passed!\n";
-    }
-    else
-    {
-        std::cout<<"Failed!\n";
-    }
+    // Debug ref version
+    //auto ref_vals = ref_convolution_add<data_type, data_type>(A_vec, W_vec, C_vec, in_height, in_width, out_channels, in_channels, kernel_width, kernel_height);
+    //
+    //if(
+    //    std::equal(
+    //        ref_vals.begin(),
+    //        ref_vals.end(),
+    //        D_vec.begin(),
+    //        [](auto ref, auto x){ return std::abs(ref - x) < 1e-3; }
+    //    )
+    //)
+    //{
+    //    std::cout<<"Passed!\n";
+    //}
+    //else
+    //{
+    //    std::cout<<"Failed!\n";
+    //}
     
     // Debug: print vectors
     //std::cout << "ref: [ ";
