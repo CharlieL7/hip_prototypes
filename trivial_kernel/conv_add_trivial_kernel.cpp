@@ -52,11 +52,6 @@ int main(int argc, char * argv[])
     //std::generate(W_vec.begin(), W_vec.end(), [&](){return 1.0;});
     //std::generate(C_vec.begin(), C_vec.end(), [&](){return 0.0;});
 
-    // make C pinned memory
-    data_type* C_pinned_data;
-    HIP_CHECK(hipHostMalloc(&C_pinned_data, C_vec.size() * sizeof(data_type)));
-    std::copy(C_vec.begin(), C_vec.end(), C_pinned_data);
-
     // set up device buffers
     data_type* gpu_A;
     data_type* gpu_W;
@@ -153,7 +148,6 @@ int main(int argc, char * argv[])
     HIP_CHECK(hipFree(gpu_C));
     HIP_CHECK(hipFree(gpu_D));
     HIP_CHECK(hipFree(gpu_W));
-    HIP_CHECK(hipHostFree(C_pinned_data));
 
     HIP_CHECK(hipStreamDestroy(conv_stream));
     HIP_CHECK(hipStreamDestroy(prefetch_add_stream));
