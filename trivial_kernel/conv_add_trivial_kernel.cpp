@@ -1,7 +1,71 @@
 #include <random>
+#include <cstdlib>
 #include <iostream>
 #include <hip/hip_runtime.h>
+#include "argparse.hpp"
 #include "common.hpp"
+
+using data_type = float;
+
+struct input_params
+{
+	int batch_size = 1;
+    int in_channels = 1024;
+    int in_height = 1024;
+    int in_width = 1024;
+    int kernel_height = 3;
+    int kernel_width = 3;
+    int out_channels = 1024; // AKA: number of filters
+    bool use_wg_reversal = false;
+};
+
+input_params parse_inputs(int argc, char** argv)
+{
+    argparse::ArgumentParser program("conv_add_trivial_kernel");
+    program.add_argument("batch_size")
+        .help("batch size")
+        .scan<'i', int>();
+    program.add_argument("in_channels")
+        .help("number of channels")
+        .scan<'i', int>();
+    program.add_argument("in_height")
+        .help("input height")
+        .scan<'i', int>();
+    program.add_argument("in_width")
+        .help("input width")
+        .scan<'i', int>();
+    program.add_argument("kernel_height")
+        .help("kernel height")
+        .scan<'i', int>();
+    program.add_argument("kernel_width")
+        .help("kernel width")
+        .scan<'i', int>();
+    program.add_argument("out_channels")
+        .help("out channels")
+        .scan<'i', int>();
+    program.add_argument("--wg-rev")
+        .help("use workgroup reversal for add(B, C)")
+        .flag();
+    try{
+        program.parse_args(argc, argv);
+    }
+    catch(const std::exception& err){
+        std::cerr << err.what() << std::endl;
+        std::cerr << program;
+        std::exit(EXIT_FAILURE);
+    }
+    input_params ip{
+        program.get<int>("batch_size"),
+        program.get<int>("in_channels"),
+        program.get<int>("in_height"),
+        program.get<int>("in_width"),
+        program.get<int>("kernel_height"),
+        program.get<int>("kernel_width"),
+        program.get<int>("out_channels"),
+        program.get<bool>("--wg-rev")
+    };
+    return ip;
+}
 
 /**
  * Calculation:
@@ -13,25 +77,16 @@
  */
 int main(int argc, char * argv[])
 {
-    using data_type = float;
-    // input buffer sizes
-    std::size_t batch_size = 1;
-    std::size_t in_channels = 1024;
-    std::size_t in_width = 1024;
-    std::size_t in_height = 1024;
+    auto ip = parse_inputs(argc, argv);
 
-    // kernel buffer sizes
-    std::size_t kernel_width = 3;
-    std::size_t kernel_height = 3;
-    std::size_t out_channels = 1024; // AKA: number of filters
+    std::cout << "A_dims: [" << ip.batch_size << ", " << ip.in_channels << ", " << ip.in_height << ", " << ip.in_width << "]\n";
+    std::cout << "W_dims: [" << ip.out_channels << ", " << ip.in_channels << ", " << ip.kernel_height << ", " << ip.kernel_width << "]\n";
+    std::cout << "C_dims: [" << ip.batch_size << ", " << ip.out_channels << ", " << ip.in_height << ", " << ip.in_width << "]\n";
+    std::cout << "wg_reversal: " << ip.use_wg_reversal << "\n";
 
-    std::cout << "A_dims: [" << batch_size << ", " << in_channels << ", " << in_height << ", " << in_width << "]\n";
-    std::cout << "W_dims: [" << out_channels << ", " << in_channels << ", " << kernel_height << ", " << kernel_width << "]\n";
-    std::cout << "C_dims: [" << batch_size << ", " << out_channels << ", " << in_height << ", " << in_width << "]\n";
-
-    std::size_t conv_input_size = batch_size * in_channels * in_height * in_width;
-    std::size_t conv_output_size = batch_size * out_channels * in_height * in_width;
-    std::size_t kernel_size = out_channels * in_channels *  kernel_height * kernel_width;
+    std::size_t conv_input_size = ip.batch_size * ip.in_channels * ip.in_height * ip.in_width;
+    std::size_t conv_output_size = ip.batch_size * ip.out_channels * ip.in_height * ip.in_width;
+    std::size_t kernel_size = ip.out_channels * ip.in_channels *  ip.kernel_height * ip.kernel_width;
 
     std::vector<data_type> A_vec(conv_input_size);
     std::vector<data_type> W_vec(kernel_size);
@@ -71,7 +126,7 @@ int main(int argc, char * argv[])
 
     // set up threads
     std::size_t block_size = 220;
-    std::size_t conv_grid_size = out_channels;
+    std::size_t conv_grid_size = ip.out_channels;
 
     // set up streams
     hipStream_t conv_stream;
@@ -96,21 +151,21 @@ int main(int argc, char * argv[])
         {},
         {},
         {},
-        in_height,
-        in_width,
-        batch_size,
-        out_channels,
-        in_channels,
-        in_height,
-        in_width,
+        ip.in_height,
+        ip.in_width,
+        ip.batch_size,
+        ip.out_channels,
+        ip.in_channels,
+        ip.in_height,
+        ip.in_width,
         1, // kernel y stride
         1, // kernel x stride
         1, // dilation y
         1, // dilation x
         1, // padding y
         1, // padding x
-        kernel_height,
-        kernel_width,
+        ip.kernel_height,
+        ip.kernel_width,
         1 // groups
     );
 
@@ -128,7 +183,12 @@ int main(int argc, char * argv[])
     );
 
     HIP_CHECK(hipStreamSynchronize(conv_stream));
+
     auto add_kernel = vector_add<false, data_type, int>;
+    if(ip.use_wg_reversal)
+    {
+        add_kernel = vector_add<true, data_type, int>;
+    }
     hipLaunchKernelGGL(add_kernel,
         dim3(add_grid_size),
         dim3(block_size),
@@ -153,7 +213,7 @@ int main(int argc, char * argv[])
     HIP_CHECK(hipStreamDestroy(prefetch_add_stream));
 	
     // Debug: ref version
-    //auto ref_vals = ref_convolution_add<data_type, data_type>(A_vec, W_vec, C_vec, in_height, in_width, out_channels, in_channels, kernel_width, kernel_height);
+    //auto ref_vals = ref_convolution_add<data_type, data_type>(A_vec, W_vec, C_vec, ip.in_height, ip.in_width, ip.out_channels, ip.in_channels, ip.kernel_width, ip.kernel_height);
     //
     //if(
     //    std::equal(
