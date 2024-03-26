@@ -144,7 +144,7 @@ int main(int argc, char * argv[])
         dim3(conv_grid_size),
         dim3(block_size),
         0,
-        0,
+        conv_stream,
         gpu_A,
         gpu_W,
         gpu_B,
@@ -169,6 +169,10 @@ int main(int argc, char * argv[])
         1 // groups
     );
 
+    hipEvent_t conv_kernel_event;
+    HIP_CHECK(hipEventCreate(&conv_kernel_event));
+    HIP_CHECK(hipEventRecord(conv_kernel_event, conv_stream));
+
     std::size_t add_grid_size = (conv_output_size + block_size - 1) / block_size;
 
     // trying to prefetch gpu_C results
@@ -177,12 +181,17 @@ int main(int argc, char * argv[])
         dim3(add_grid_size),
         dim3(block_size),
         0,
-        0,
+        prefetch_add_stream,
         gpu_C,
         conv_output_size
     );
 
-    HIP_CHECK(hipStreamSynchronize(conv_stream));
+    hipEvent_t trivial_kernel_event;
+    HIP_CHECK(hipEventCreate(&trivial_kernel_event));
+    HIP_CHECK(hipEventRecord(trivial_kernel_event, prefetch_add_stream));
+
+    HIP_CHECK(hipStreamWaitEvent(prefetch_add_stream, trivial_kernel_event, 0));
+    HIP_CHECK(hipStreamWaitEvent(prefetch_add_stream, conv_kernel_event, 0));
 
     auto add_kernel = vector_add<false, data_type, int>;
     if(ip.use_wg_reversal)
@@ -193,7 +202,7 @@ int main(int argc, char * argv[])
         dim3(add_grid_size),
         dim3(block_size),
         0,
-        0,
+        prefetch_add_stream,
         gpu_B,
         gpu_C,
         gpu_D,
@@ -208,6 +217,8 @@ int main(int argc, char * argv[])
     HIP_CHECK(hipFree(gpu_C));
     HIP_CHECK(hipFree(gpu_D));
     HIP_CHECK(hipFree(gpu_W));
+
+    HIP_CHECK(hipEventDestroy(trivial_kernel_event));
 
     HIP_CHECK(hipStreamDestroy(conv_stream));
     HIP_CHECK(hipStreamDestroy(prefetch_add_stream));
