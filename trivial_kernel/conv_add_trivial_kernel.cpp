@@ -22,9 +22,6 @@ struct input_params
 input_params parse_inputs(int argc, char** argv)
 {
     argparse::ArgumentParser program("conv_add_trivial_kernel");
-    program.add_argument("batch_size")
-        .help("batch size")
-        .scan<'i', int>();
     program.add_argument("in_channels")
         .help("number of channels")
         .scan<'i', int>();
@@ -55,7 +52,7 @@ input_params parse_inputs(int argc, char** argv)
         std::exit(EXIT_FAILURE);
     }
     input_params ip{
-        program.get<int>("batch_size"),
+        1,
         program.get<int>("in_channels"),
         program.get<int>("in_height"),
         program.get<int>("in_width"),
@@ -129,9 +126,7 @@ int main(int argc, char * argv[])
     std::size_t conv_grid_size = ip.out_channels;
 
     // set up streams
-    hipStream_t conv_stream;
     hipStream_t prefetch_add_stream;
-    HIP_CHECK(hipStreamCreate(&conv_stream));
     HIP_CHECK(hipStreamCreate(&prefetch_add_stream));
     
     // blocking copies
@@ -144,7 +139,7 @@ int main(int argc, char * argv[])
         dim3(conv_grid_size),
         dim3(block_size),
         0,
-        conv_stream,
+        0,
         gpu_A,
         gpu_W,
         gpu_B,
@@ -169,20 +164,16 @@ int main(int argc, char * argv[])
         1 // groups
     );
 
-    hipEvent_t conv_kernel_event;
-    HIP_CHECK(hipEventCreate(&conv_kernel_event));
-    HIP_CHECK(hipEventRecord(conv_kernel_event, conv_stream));
-
-    std::size_t add_grid_size = (conv_output_size + block_size - 1) / block_size;
-
     // trying to prefetch gpu_C results
     auto add_one_kernel = add_one<float, int>;
     hipLaunchKernelGGL(add_one_kernel,
-        dim3(add_grid_size),
+        dim3(conv_grid_size),
         dim3(block_size),
         0,
         prefetch_add_stream,
         gpu_C,
+        ip.in_height,
+        ip.in_width,
         conv_output_size
     );
 
@@ -190,8 +181,8 @@ int main(int argc, char * argv[])
     HIP_CHECK(hipEventCreate(&trivial_kernel_event));
     HIP_CHECK(hipEventRecord(trivial_kernel_event, prefetch_add_stream));
 
-    HIP_CHECK(hipStreamWaitEvent(prefetch_add_stream, trivial_kernel_event, 0));
-    HIP_CHECK(hipStreamWaitEvent(prefetch_add_stream, conv_kernel_event, 0));
+    HIP_CHECK(hipStreamSynchronize(prefetch_add_stream));
+    //HIP_CHECK(hipStreamWaitEvent(0, trivial_kernel_event, 0));
 
     auto add_kernel = vector_add<false, data_type, int>;
     if(ip.use_wg_reversal)
@@ -199,13 +190,15 @@ int main(int argc, char * argv[])
         add_kernel = vector_add<true, data_type, int>;
     }
     hipLaunchKernelGGL(add_kernel,
-        dim3(add_grid_size),
+        dim3(conv_grid_size),
         dim3(block_size),
         0,
-        prefetch_add_stream,
+        0,
         gpu_B,
         gpu_C,
         gpu_D,
+        ip.in_height,
+        ip.in_width,
         conv_output_size
     );
 
@@ -218,43 +211,45 @@ int main(int argc, char * argv[])
     HIP_CHECK(hipFree(gpu_D));
     HIP_CHECK(hipFree(gpu_W));
 
-    HIP_CHECK(hipEventDestroy(conv_kernel_event));
     HIP_CHECK(hipEventDestroy(trivial_kernel_event));
 
-    HIP_CHECK(hipStreamDestroy(conv_stream));
     HIP_CHECK(hipStreamDestroy(prefetch_add_stream));
 	
     // Debug: ref version
-    //auto ref_vals = ref_convolution_add<data_type, data_type>(A_vec, W_vec, C_vec, ip.in_height, ip.in_width, ip.out_channels, ip.in_channels, ip.kernel_width, ip.kernel_height);
-    //
-    //if(
-    //    std::equal(
-    //        ref_vals.begin(),
-    //        ref_vals.end(),
-    //        D_vec.begin(),
-    //        [](auto ref, auto x){ return std::abs(ref - x) < 1e-3; }
-    //    )
-    //)
-    //{
-    //    std::cout<<"Passed!\n";
-    //}
-    //else
-    //{
-    //    std::cout<<"Failed!\n";
-    //}
+    /*
+    auto ref_vals = ref_convolution_add<data_type, data_type>(A_vec, W_vec, C_vec, ip.in_height, ip.in_width, ip.out_channels, ip.in_channels, ip.kernel_width, ip.kernel_height);
+    
+    if(
+        std::equal(
+            ref_vals.begin(),
+            ref_vals.end(),
+            D_vec.begin(),
+            [](auto ref, auto x){ return std::abs(ref - x) < 1e-3; }
+        )
+    )
+    {
+        std::cout<<"Passed!\n";
+    }
+    else
+    {
+        std::cout<<"Failed!\n";
+    }
+    */
 
     // Debug: print vectors
-    //std::cout << "ref: [ ";
-    //for(auto x : ref_vals)
-    //{
-    //    std::cout << x << ", ";
-    //}
-    //std::cout << "]\n";
-    //std::cout << "gpu: [ ";
-    //for(auto x : D_vec)
-    //{
-    //    std::cout << x << ", ";
-    //}
-    //std::cout << "]\n";
+    /*
+    std::cout << "ref: [ ";
+    for(auto x : ref_vals)
+    {
+        std::cout << x << ", ";
+    }
+    std::cout << "]\n";
+    std::cout << "gpu: [ ";
+    for(auto x : D_vec)
+    {
+        std::cout << x << ", ";
+    }
+    std::cout << "]\n";
+    */
 
 }

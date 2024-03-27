@@ -173,33 +173,49 @@ __global__ void vector_add(
     const VecType* __restrict__ a,
     const VecType* __restrict__ b,
     VecType* __restrict__ c,
-    DimType len) 
+    DimType height,
+    DimType width,
+    DimType total_size) 
 {
-    int i = 0;
+    // each workgroup calculates for one channel
+    // expecting # channels workgroups
+    int thread_length = height * width;
+    int bid = blockIdx.x;
     if constexpr(WG_REVERSAL)
     {
-        int flipped_block_idx = gridDim.x - blockIdx.x - 1;
-        i = flipped_block_idx * blockDim.x + threadIdx.x;
+        bid = gridDim.x - blockIdx.x - 1;
     }
-    else
+    int prepend_length = bid * thread_length;
+    a += prepend_length;
+    b += prepend_length;
+    c += prepend_length;
+    for (int tid = threadIdx.x; tid < thread_length; tid += blockDim.x)
     {
-        i = blockIdx.x * blockDim.x + threadIdx.x;
-    }
-    if (i < len)
-    {
-        c[i] = a[i] + b[i];
+        if (tid + prepend_length < total_size)
+        {
+            c[tid] = a[tid] + b[tid];
+        }
     }
 }
 
 template <typename VecType, typename DimType>
 __global__ void add_one(
     VecType* __restrict__ x,
-    DimType len)
+    DimType height,
+    DimType width,
+    DimType total_size)
 {
-    int i = blockIdx.x * blockDim.x + threadIdx.x;
-    if (i < len)
+    // each workgroup calculates for one channel
+    // expecting # channels workgroups
+    int thread_length = height * width;
+    int prepend_length = blockIdx.x * thread_length;
+    x += prepend_length;
+    for (int tid = threadIdx.x; tid < thread_length; tid += blockDim.x)
     {
-        x[i] = x[i] + 1;
+        if (tid + prepend_length < total_size)
+        {
+            x[tid] = x[tid] + 1;
+        }
     }
 }
 
@@ -270,7 +286,7 @@ std::vector<T> ref_convolution_add(
     } // k
 
     std::transform(C.begin(), C.end(), ret.begin(), ret.begin(),
-        [](auto c, auto d){ return c + d; });
+        [](auto c, auto d){ return c + d + 1; });
     return ret;
 }
 #endif
