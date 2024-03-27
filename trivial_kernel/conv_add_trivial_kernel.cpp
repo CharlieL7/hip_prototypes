@@ -218,6 +218,7 @@ int main(int argc, char * argv[])
     HIP_CHECK(hipFree(gpu_D));
     HIP_CHECK(hipFree(gpu_W));
 
+    HIP_CHECK(hipEventDestroy(conv_kernel_event));
     HIP_CHECK(hipEventDestroy(trivial_kernel_event));
 
     HIP_CHECK(hipStreamDestroy(conv_stream));
