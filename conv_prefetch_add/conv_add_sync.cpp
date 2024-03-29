@@ -125,10 +125,6 @@ int main(int argc, char * argv[])
     std::size_t block_size = 220;
     std::size_t conv_grid_size = ip.out_channels;
 
-    // set up streams
-    hipStream_t prefetch_add_stream;
-    HIP_CHECK(hipStreamCreate(&prefetch_add_stream));
-    
     // blocking copies
     HIP_CHECK(hipMemcpy(gpu_A, A_vec.data(), bytes_A, hipMemcpyHostToDevice));
     HIP_CHECK(hipMemcpy(gpu_W, W_vec.data(), bytes_W, hipMemcpyHostToDevice));
@@ -164,25 +160,6 @@ int main(int argc, char * argv[])
         1 // groups
     );
 
-    // trying to prefetch gpu_C results
-    auto add_one_kernel = add_one<float, int>;
-    hipLaunchKernelGGL(add_one_kernel,
-        dim3(conv_grid_size),
-        dim3(block_size),
-        0,
-        prefetch_add_stream,
-        gpu_C,
-        ip.in_height,
-        ip.in_width,
-        conv_output_size
-    );
-
-    hipEvent_t trivial_kernel_event;
-    HIP_CHECK(hipEventCreate(&trivial_kernel_event));
-    HIP_CHECK(hipEventRecord(trivial_kernel_event, prefetch_add_stream));
-
-    HIP_CHECK(hipStreamWaitEvent(0, trivial_kernel_event, 0));
-
     auto add_kernel = vector_add<false, data_type, int>;
     if(ip.use_wg_reversal)
     {
@@ -209,10 +186,6 @@ int main(int argc, char * argv[])
     HIP_CHECK(hipFree(gpu_C));
     HIP_CHECK(hipFree(gpu_D));
     HIP_CHECK(hipFree(gpu_W));
-
-    HIP_CHECK(hipEventDestroy(trivial_kernel_event));
-
-    HIP_CHECK(hipStreamDestroy(prefetch_add_stream));
 	
     // Debug: ref version
     /*

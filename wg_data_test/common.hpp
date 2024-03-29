@@ -156,7 +156,9 @@ __global__ void naive_conv_fwd_nchw(
         {
             size_t o_idx = static_cast<size_t>(iho) * wo + static_cast<size_t>(iwo);
 
-            p_out[o_idx] = cast_to<acc_data_t, dst_data_t>(value);
+            //p_out[o_idx] = cast_to<acc_data_t, dst_data_t>(value);
+            // DEBUG B_ijk = i
+            p_out[o_idx] = ik;
         }
         else
         {
@@ -214,7 +216,9 @@ __global__ void add_one(
     {
         if (tid + prepend_length < total_size)
         {
-            x[tid] = x[tid] + 1;
+            //x[tid] = x[tid] + 1;
+            // Debug C_ijk = i
+            x[tid] = blockIdx.x;
         }
     }
 }

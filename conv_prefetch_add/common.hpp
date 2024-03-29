@@ -27,6 +27,7 @@ template <bool ASSUME_PACKED, typename src_data_t, typename acc_data_t, typename
 __global__ void naive_conv_fwd_nchw(
     const src_data_t* __restrict__ p_in, // input buffer
     const src_data_t* __restrict__ p_wei, // weights buffer
+    dst_data_t* __restrict__ c_buffer, // C matrix buffer for prefetching
     dst_data_t* __restrict__ p_out, // output buffer
     const std::array<int, 5> in_strides, // strides in 5 length array, not used for ASSUME_PACKED
     const std::array<int, 5> wei_strides, // weight strides in 5 length array, not used for ASSUME_PACKED
@@ -155,7 +156,8 @@ __global__ void naive_conv_fwd_nchw(
         if constexpr(ASSUME_PACKED)
         {
             size_t o_idx = static_cast<size_t>(iho) * wo + static_cast<size_t>(iwo);
-
+            // add one to C buffer (prefetch)
+            c_buffer[o_idx] += 1;
             p_out[o_idx] = cast_to<acc_data_t, dst_data_t>(value);
         }
         else

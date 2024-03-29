@@ -92,17 +92,17 @@ int main(int argc, char * argv[])
     std::vector<data_type> D_vec(conv_output_size);
 
     // fill A, W, and C with random data
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_real_distribution<> distrib(0.0, 1.0);
-    std::generate(A_vec.begin(), A_vec.end(), [&](){return distrib(gen);});
-    std::generate(W_vec.begin(), W_vec.end(), [&](){return distrib(gen);});
-    std::generate(C_vec.begin(), C_vec.end(), [&](){return distrib(gen);});
+    //std::random_device rd;
+    //std::mt19937 gen(rd());
+    //std::uniform_real_distribution<> distrib(0.0, 1.0);
+    //std::generate(A_vec.begin(), A_vec.end(), [&](){return distrib(gen);});
+    //std::generate(W_vec.begin(), W_vec.end(), [&](){return distrib(gen);});
+    //std::generate(C_vec.begin(), C_vec.end(), [&](){return distrib(gen);});
     
     // Debug: fill with 1's and 0's
-    //std::generate(A_vec.begin(), A_vec.end(), [&](){return 1.0;});
-    //std::generate(W_vec.begin(), W_vec.end(), [&](){return 1.0;});
-    //std::generate(C_vec.begin(), C_vec.end(), [&](){return 0.0;});
+    std::fill(A_vec.begin(), A_vec.end(), 1.0);
+    std::fill(W_vec.begin(), W_vec.end(), 0.0);
+    std::fill(C_vec.begin(), C_vec.end(), 0.0);
 
     // set up device buffers
     data_type* gpu_A;
@@ -243,12 +243,12 @@ int main(int argc, char * argv[])
         std::cout << x << ", ";
     }
     std::cout << "]\n";
+
+    */
     std::cout << "gpu: [ ";
     for(auto x : D_vec)
     {
         std::cout << x << ", ";
     }
     std::cout << "]\n";
-    */
-
 }
