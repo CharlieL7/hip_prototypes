@@ -1,0 +1,860 @@
+    1  cd /opt/rocm/lib/rocprofiler/
+    2  ls
+    3  cd ..
+    4  ls
+    5  cd rocprofiler/
+    6  ls
+    7  cd ..
+    8  ls
+    9  cd lib
+   10  ls
+   11  cd ..
+   12  ls
+   13  find . -name derived_metrics.xml
+   14  find . -name=derived_metrics.xml
+   15  find . -name derived_metrics.xml
+   16  find . -name derived_metrics
+   17  find . -name metrics
+   18  find . -name "derived_metrics.xml"
+   19  find /opt/rocm -name "derived_metrics.xml"
+   20  find /opt/rocm/ -name "metrics.xml"
+   21  find /opt/rocm -name "derived_metrics.xml"
+   22  ls
+   23  cd ..
+   24  ls
+   25  find /opt/rocm -name "derived_metrics.xml"
+   26  find /opt/rocm -name "basic_metrics.xml"
+   27  find /opt/rocm -name "basic_metrics"
+   28  find /opt/rocm -name "basic_metrics*"
+   29  find /opt/rocm -name "basic_metrics.txt"
+   30  find /opt/rocm -name "metrics.xml"
+   31  ls
+   32  cd rocm
+   33  find . -name "metrics.xml"
+   34  find . -name "*.xml"
+   35  cd libexec/rocprofiler/counters/
+   36  ls
+   37  nvim derived_counters.xml 
+   38  cp basic_counters.xml /codes/mi300_rocprof/
+   39  cp derived_counters.xml /codes/mi300_rocprof/
+   40  cd ~
+   41  ls
+   42  exi
+   43  exit
+   44  ls
+   45  cd AMDMIGraphX
+   46  ls
+   47  mkdir docker_build
+   48  ls
+   49  make -j$(nproc)
+   50  CXX=/opt/rocm/llvm/bin/clang++ cmake -DGPU_TARGETS=$(/opt/rocm/bin/rocminfo | grep -o -m1 'gfx.*') ..
+   51  cd docker_build/
+   52  CXX=/opt/rocm/llvm/bin/clang++ cmake -DGPU_TARGETS=$(/opt/rocm/bin/rocminfo | grep -o -m1 'gfx.*') ..
+   53  make -j$(nproc)
+   54  cd ..
+   55  ls
+   56  cd ..
+   57  ls
+   58  cd mi300_rocprof/
+   59  ls
+   60  rocprofv2 --help
+   61  env
+   62  rocprofv2 --help
+   63  rocprofv2 --list-counters
+   64  ls
+   65  rocprofv2 --list-counters > MI300_counters_list.txt 
+   66  ls
+   67  apt install neovim
+   68  ls
+   69  nvim MI300_counters_list.txt 
+   70  ls
+   71  rocprofv2 --help
+   72  ls
+   73  nvim metrics.xml 
+   74  ls
+   75  rocprofv2 --plugin perfetto -i cache_counters_MI300.txt -d MI300 -o sdxl_unet_MLIR /codes/AMDMIGraphX/docker_build/bin/driver run compiled_models/sdxl_unet_opt_MLIR.mxr
+   76  rocprofv2 --plugin perfetto -i cache_counters_MI300.txt -m metrics.xml -d MI300 -o sdxl_unet_MLIR /codes/AMDMIGraphX/docker_build/bin/driver run compiled_models/sdxl_unet_opt_MLIR.mxr
+   77  ls
+   78  cp derived_counters.xml custom_counters.xml
+   79  nvim custom_counters.xml 
+   80  rm metrics.xml 
+   81  rocprofv2 --plugin perfetto -i cache_counters_MI300.txt -m custom_metrics.xml -d MI300 -o sdxl_unet_MLIR /codes/AMDMIGraphX/docker_build/bin/driver run compiled_models/sdxl_unet_opt_MLIR.mxr
+   82  rocprofv2 --plugin perfetto -i cache_counters_MI300.txt -m custom_counters.xml -d MI300 -o sdxl_unet_MLIR /codes/AMDMIGraphX/docker_build/bin/driver run compiled_models/sdxl_unet_opt_MLIR.mxr
+   83  ls
+   84  cd MI300
+   85  ls
+   86  cd pmc_
+   87  ls
+   88  cd pmc_1/
+   89  ls
+   90  nvim pmc.txt 
+   91  ls
+   92  ranger
+   93  apt install ranger
+   94  ranger
+   95  ls
+   96  cd ..
+   97  ls
+   98  cd ..
+   99  ls
+  100  cp cache_counters_MI300.txt tcc_only_counters_MI300.txt
+  101  ls
+  102  nvim tcc_only_counters_MI300.txt 
+  103  ls
+  104  rocprofv2 --plugin perfetto -i tcc_only_counters_MI300.txt -m custom_counters.xml -d MI300 -o sdxl_unet_MLIR /codes/AMDMIGraphX/docker_build/bin/driver run compiled_models/sdxl_unet_opt_MLIR.mxr
+  105  ls
+  106  cd MI300
+  107  ls
+  108  cd pmc_2/
+  109  ls
+  110  cd ..
+  111  ls
+  112  cd ..
+  113  ls
+  114  nvim tcc_only_counters_MI300.txt 
+  115  ls
+  116  nvim tcc_only_counters_MI300.txt 
+  117  ls
+  118  rocprofv2 --plugin perfetto -i tcc_only_counters_MI300.txt -m custom_counters.xml -d MI300 -o sdxl_unet_MLIR /codes/AMDMIGraphX/docker_build/bin/driver run compiled_models/sdxl_unet_opt_MLIR.mxr
+  119  ls
+  120  nvim tcc_only_counters_MI300.txt 
+  121  ls
+  122  nvim custom_counters.xml 
+  123  nvim cache_counters_MI300.txt 
+  124  rocprofv2 --plugin perfetto -i tcc_only_counters_MI300.txt -d MI300 -o sdxl_unet_MLIR /codes/AMDMIGraphX/docker_build/bin/driver run compiled_models/sdxl_unet_opt_MLIR.mxr
+  125  ls
+  126  nvim custom_counters.xml 
+  127  rocprofv2 --plugin perfetto -i tcc_only_counters_MI300.txt -m custom_counters.xml -d MI300 -o sdxl_unet_MLIR /codes/AMDMIGraphX/docker_build/bin/driver run compiled_models/sdxl_unet_opt_MLIR.mxr
+  128  ls
+  129  cd MI300
+  130  ls
+  131  cd pmc_1/
+  132  ls
+  133  ranger
+  134  rocprofv2 -i tcc_only_counters_MI300.txt -m custom_counters.xml -d MI300 -o sdxl_unet_MLIR /codes/AMDMIGraphX/docker_build/bin/driver run compiled_models/sdxl_unet_opt_MLIR.mxr
+  135  cd ..
+  136  rocprofv2 -i tcc_only_counters_MI300.txt -m custom_counters.xml -d MI300 -o sdxl_unet_MLIR /codes/AMDMIGraphX/docker_build/bin/driver run compiled_models/sdxl_unet_opt_MLIR.mxr
+  137  cd ..
+  138  rocprofv2 -i tcc_only_counters_MI300.txt -m custom_counters.xml -d MI300 -o sdxl_unet_MLIR /codes/AMDMIGraphX/docker_build/bin/driver run compiled_models/sdxl_unet_opt_MLIR.mxr
+  139  ls
+  140  cd MI300/pmc_1/
+  141  ls
+  142  nvim results_sdxl_unet_MLIR.csv 
+  143  cd ..
+  144  ls
+  145  cd ..
+  146  ls
+  147  rocprofv2 -i cache_counters_MI300.txt -m custom_counters.xml -d MI300 -o sdxl_unet_MLIR /codes/AMDMIGraphX/docker_build/bin/driver run compiled_models/sdxl_unet_opt_MLIR.mxr
+  148  exit
+  149  ls
+  150  cd AMDMIGraphX
+  151  ls
+  152  docker_build/
+  153  ls
+  154  cd docker_build/
+  155  ls
+  156  bin/driver read /codes/onnx_models/inception_v3.onnx 
+  157  MIGRAPHX_MLIR_USE_SPECIFIC_OPS=convolution,dot,fused bin/driver perf /codes/onnx_models/inception_v3.onnx | tee inception_v3_MLIR_perf.txt
+  158  ls
+  159  readlink -f inception_v3_MLIR_perf.txt 
+  160  cp inception_v3_MLIR_perf.txt /codes
+  161  exit
+  162  ls
+  163  cd hip_prototypes/
+  164  ls
+  165  cd use_miopen_conv/
+  166  ls
+  167  nvim cache_counters.txt 
+  168  ls
+  169  history
+  170  ls
+  171  rocprofv2 -i cache_counters_MI300.txt -d sync_copy_AWC ./conv_add_sync_copy.exe 
+  172  ls
+  173  nvim cache_counters.txt 
+  174  rocprofv2 -i cache_counters.txt -d sync_copy_AWC ./conv_add_sync_copy.exe 
+  175  ls
+  176  cd sync_copy_AWC/
+  177  ls
+  178  cd pmc_1/
+  179  ls
+  180  nvim results_34.csv 
+  181  cd ..
+  182  ls
+  183  cd ..
+  184  ls
+  185  make sync_copy
+  186  make clean
+  187  make sync_copy
+  188  ./conv_add_sync_copy.exe 
+  189  rocprofv2 -i cache_counters.txt -d sync_copy_AWC ./conv_add_sync_copy.exe 
+  190  ls
+  191  cd sync_copy_AWC/
+  192  ls
+  193  cd pmc_1/
+  194  ls
+  195  nvim results_130
+  196  nvim results_120.csv 
+  197  cd ..
+  198  ls
+  199  rocprofv2 --plugin perfetto -i cache_counters.txt -d sync_copy_AWC ./conv_add_sync_copy.exe 
+  200  cd sync_copy_AWC/
+  201  ls
+  202  cd ..
+  203  ls
+  204  exit
+  205  ls
+  206  cd charllin_stuff 
+  207  ls
+  208  cd hip_prototypes/
+  209  ls
+  210  cd usr
+  211  ls
+  212  cd use_miopen_conv/
+  213  ls
+  214  rocprofv2 -i cache_counters.txt -d sync_acopy ./conv_add_async_copy.exe 
+  215  ls
+  216  mv sync_acopy/ async_copy/
+  217  ls
+  218  cd async_copy/
+  219  ls
+  220  cd pmx
+  221  cd pmc_1/
+  222  ls
+  223  nvim results_25.csv 
+  224  cd ..
+  225  ls
+  226  nvim conv_add_async_copy.
+  227  nvim conv_add_async_copy.cpp
+  228  rocprofv2 -i cache_counters.txt -d sync_acopy ./conv_add_async_copy.exe 
+  229  rm -r sync_acopy/
+  230  rocprofv2 -i cache_counters.txt -d async_copy ./conv_add_async_copy.exe 
+  231  ls
+  232  nvim async_copy/pmc_1/results_57.csv 
+  233  ls
+  234  make clean
+  235  make
+  236  rocprofv2 -i cache_counters.txt -d async_copy ./conv_add_async_copy.exe 
+  237  nvim async_copy/pmc_1/results_188.csv 
+  238  nvim conv_add_async_copy.
+  239  nvim conv_add_async_copy.cpp 
+  240  nvim conv_add_sync_copy.cpp 
+  241  nvim conv_add_async_copy.cpp 
+  242  make clean
+  243  make
+  244  rocprofv2 -i cache_counters.txt -d async_copy ./conv_add_async_copy.exe 
+  245  nvim async_copy/pmc_1/results_325.csv 
+  246  ls
+  247  nvim conv_add_sync_copy.
+  248  nvim conv_add_sync_copy.cpp
+  249  ls
+  250  make clean
+  251  make
+  252  rocprofv2 -i cache_counters.txt -d sync_copy_CAW ./conv_add_sync_copy.exe 
+  253  nvim sync_copy_CAW/pmc_1/results_462.csv 
+  254  ls
+  255  nvim conv_add_sync_copy.cpp
+  256  make clean
+  257  make
+  258  ls
+  259  rocprofv2 -i cache_counters.txt -d sync_copy_CAW -o 1024_CKHW ./conv_add_sync_copy.exe 
+  260  nvim conv_add_sync_copy.cpp
+  261  make clean
+  262  make
+  263  rocprofv2 -i cache_counters.txt -d sync_copy_CAW -o 1024_CK ./conv_add_sync_copy.exe 
+  264  nvim sync_copy_CAW/pmc_1/results_1024_CK.csv 
+  265  exit
+  266  ls
+  267  cd hip_prototypes/
+  268  ls
+  269  cd use_miopen_conv/
+  270  ls
+  271  nvim conv_add_async_copy.cpp 
+  272  nvim conv_add_sync_copy.cpp 
+  273  make sync_copy
+  274  /opt/rocm/bin/hipcc conv_add_sync_copy.o -o conv_add_sync_copy_AWC.exe
+  275  ls
+  276  rocprofv2 -i cache_counters.txt -d sync_copy_AWC -o 1024_CK ./conv_add_sync_copy_AWC.exe 
+  277  nvim sync_copy_AWC/pmc_1/results_1024_CK.csv 
+  278  rocprofv2 -i cache_counters.txt -d async_copy -o 1024_CK ./conv_add_async_copy.exe 
+  279  nvim async_copy/pmc_1/results_1024_CK.csv
+  280  nvim conv_add_async_copy.
+  281  nvim conv_add_async_copy.cpp
+  282  rm async_copy/pmc_1/results_1024_CK.csv
+  283  rocprofv2 -i cache_counters.txt -d async_copy -o 1024_CK ./conv_add_async_copy.exe 
+  284  rm async_copy/pmc_1/results_1024_CK.csv
+  285  make
+  286  rocprofv2 -i cache_counters.txt -d async_copy -o 1024_CK ./conv_add_async_copy.exe 
+  287  nvim async_copy/pmc_1/results_1024_CK.csv
+  288  ls
+  289  nvim conv_add_async_copy.cpp 
+  290  make
+  291  ./conv_add_sync_copy.cpp
+  292  ./conv_add_sync_copy.exe
+  293  ./conv_add_async_copy.exe 
+  294  ls
+  295  nvim conv_add_sync_copy.cpp
+  296  git status
+  297  ls
+  298  git pull
+  299  git status
+  300  make clena
+  301  make clean
+  302  make sync_copy
+  303  ls
+  304  ./conv_add_sync_copy true
+  305  ./conv_add_sync_copy.exe true
+  306  rocprofv2 -i cache_counters.txt -d sync_copy_wg_reversal -o 1024_CK_wg_reversal ./conv_add_sync_copy.exe true
+  307  nvim sync_copy_wg_reversal/pmc_1/results_1024_CK_wg_reversal.csv
+  308  make clean
+  309  make sync_copy
+  310  ./conv_add_sync_copy.exe
+  311  ls
+  312  make clean
+  313  make sync_copy
+  314  ls
+  315  ./conv_add_sync_copy true
+  316  ./conv_add_sync_copy.exe true
+  317  rocprofv2 -i cache_counters.txt -d sync_copy_wg_reversal -o 1024_CK_wg_reversal ./conv_add_sync_copy.exe true
+  318  nvim sync_copy_wg_reversal/pmc_1/results_1024_CK_wg_reversal.csv
+  319  ls
+  320  nvim conv_add_sync_copy.cpp
+  321  make clean
+  322  make sync_copy
+  323  rocprofv2 -i cache_counters.txt -d sync_copy_wg_reversal -o 320K_wg_reversal ./conv_add_sync_copy.exe true
+  324  nvim sync_copy_wg_reversal/pmc_1/results_320K_wg_reversal.csv
+  325  rocminfo
+  326  ls
+  327  nvim conv_add_sync_copy.cpp
+  328  rocprofv2 -i cache_counters.txt -d sync_copy_wg_reversal -o 320K_wg_reversal ./conv_add_sync_copy.exe true
+  329  nvim sync_copy_wg_reversal/pmc_1/results_320K_wg_reversal.csv
+  330  make clean
+  331  make sync_copy
+  332  rocprofv2 -i cache_counters.txt -d sync_copy_wg_reversal -o 320K_wg_reversal ./conv_add_sync_copy.exe true
+  333  nvim sync_copy_wg_reversal/pmc_1/results_320K_wg_reversal.csv
+  334  nvim conv_add_sync_copy.cpp
+  335  make clean
+  336  rocprofv2 -i cache_counters.txt -d sync_copy_wg_reversal -o small_problem ./conv_add_sync_copy.exe false
+  337  make sync_copy
+  338  rocprofv2 -i cache_counters.txt -d sync_copy_wg_reversal -o small_problem ./conv_add_sync_copy.exe false
+  339  nvim sync_copy_wg_reversal/pmc_1/results_small_problem.csv
+  340  ls
+  341  rocprofv2 --list-counters > list_counters_m300.txt
+  342  nvim list_counters_m300.txt 
+  343  ls
+  344  nvim conv_add_sync_copy.cpp
+  345  nvim common.hpp 
+  346  nvim conv_add_sync_copy.cpp
+  347  make clean
+  348  nvim conv_add_sync_copy
+  349  nvim conv_add_sync_copy.cpp
+  350  make sync_copy_
+  351  make sync_copy
+  352  nvim conv_add_sync_copy.cpp
+  353  make sync_copy
+  354  rocprofv2 -i cache_counters.txt -d sync_copy -o 1024CKHW ./conv_add_sync_copy.exe false
+  355  nvim sync_copy/pmc_1/results_1024CKHW.csv
+  356  nvim conv_add_sync_copy
+  357  nvim conv_add_sync_copy.cpp
+  358  make clean
+  359  make sync_copy
+  360  rocprofv2 -i cache_counters.txt -d sync_copy -o 1024CKHW_CAW ./conv_add_sync_copy.exe false
+  361  nvim sync_copy/pmc_1/results_1024CKHW_CAW.csv
+  362  nvim conv_add_async_copy.cpp 
+  363  make async_copy
+  364  rocprofv2 -i cache_counters.txt -d results -o 1024CKHW_async ./conv_add_async_copy.exe
+  365  nvim conv_add_async_copy.cpp 
+  366  make clean
+  367  make async_copy
+  368  rocprofv2 -i cache_counters.txt -d results -o 1024CKHW_async ./conv_add_async_copy.exe
+  369  nvim results/pmc_1/results_1024CKHW_async.csv
+  370  rocprofv2 -i cache_counters.txt -d sync_copy -o 1024CKHW_CAW_wgr ./conv_add_sync_copy.exe true
+  371  rocprofv2 -i cache_counters.txt -d results -o 1024CKHW_CAW_wgr ./conv_add_sync_copy.exe true
+  372  make
+  373  rocprofv2 -i cache_counters.txt -d results -o 1024CKHW_CAW_wgr ./conv_add_sync_copy.exe true
+  374  rocminfo
+  375  rocm-smi
+  376  nvim results/pmc_1/results_1024CKHW_CAW_wgr.csv
+  377  ls
+  378  rm -r async_copy/
+  379  rm -r sync_copy_AWC
+  380  rm -r sync_copy_CAW/
+  381  rm -r sync_copy_wg_reversal/
+  382  ls
+  383  rm -r sync_copy/
+  384  ls
+  385  nvim conv_add_sync_copy.cpp 
+  386  rocprofv2 -i cache_counters.txt -d results -o small_problem2 ./conv_add_sync_copy.exe false
+  387  make clean
+  388  make
+  389  rocprofv2 -i cache_counters.txt -d results -o small_problem2 ./conv_add_sync_copy.exe false
+  390  nvim results/pmc_1/results_small_problem2.csv 
+  391  ls
+  392  nvim Makefile 
+  393  make
+  394  make clean
+  395  nvim Makefile 
+  396  make clean
+  397  nvim Makefile 
+  398  make
+  399  rocprofv2 -i cache_counters.txt -d results -o small_problem3 ./conv_add_sync_copy.exe false
+  400  nvim results/pmc_1/results_small_problem3.csv
+  401  hipcc --help
+  402  man hipcc
+  403  hipcc --help > hipcc_help.txt
+  404  nvim hipcc_help.txt 
+  405  cd ..
+  406  ls
+  407  cd ..
+  408  ls
+  409  cd hip_exercises/
+  410  ls
+  411  cd vector_add/
+  412  ls
+  413  hipcc vector_add.cpp 
+  414  ls
+  415  ./a.out 
+  416  ls
+  417  rocprofv2 -i /codes/hip_prototypes/use_miopen_conv/cache_counters.txt -o vec_add ./ a.out 
+  418  rocprofv2 -i /codes/hip_prototypes/use_miopen_conv/cache_counters.txt -o vec_add ./a.out 
+  419  nvim pmc_1/vec_add_1610_results.txt 
+  420  rocprofv2 -i /codes/hip_prototypes/use_miopen_conv/cache_counters.txt -o vec_add -d results ./a.out av
+  421  rocprofv2 -i cache_counters.txt -d results -o small_problem3 ./a.out 
+  422  rocprofv2 -i /codes/hip_prototypes/use_miopen_conv/cache_counters.txt -d results -o small_problem3 ./a.out 
+  423  nvim results/pmc_1/results_small_problem3.csv 
+  424  ls
+  425  nvim vector_add.cpp 
+  426  hipcc vector_add.cpp 
+  427  nvim vector_add.cpp 
+  428  hipcc vector_add.cpp 
+  429  rocprofv2 -i /codes/hip_prototypes/use_miopen_conv/cache_counters.txt -d results -o small_problem3 ./a.out 
+  430  nvim results/pmc_1/results_small_problem3.csv
+  431  cd ~
+  432  ls
+  433  export KMDUMPLLVM=1
+  434  cd /codes/hip_exercises/vector_add/
+  435  ls
+  436  rm a.out 
+  437  hipcc vector_add.cpp 
+  438  ./a.out 
+  439  ls
+  440  rm -r pmc_1/
+  441  rm -r results/
+  442  ls
+  443  env
+  444  KMDUMPISA=1 hipcc vector_add.cpp 
+  445  ls
+  446  rocprofv2 --help
+  447  rocprofv2 -i /codes/hip_prototypes/use_miopen_conv/cache_counters.txt --hsa-api -d results -o small_problem3 ./a.out 
+  448  nvim results/pmc_1/hsa_api_trace_small_problem3.csv 
+  449  hipcc -save-temps  vector_add.cpp 
+  450  ls
+  451  nvim vector_add-hip-amdgcn-amd-amdhsa-gfx942.hipi
+  452  nvim vector_add-hip-amdgcn-amd-amdhsa-gfx942.out
+  453  nvim vector_add-hip-amdgcn-amd-amdhsa-gfx942.bc
+  454  nvim vector_add-hip-amdgcn-amd-amdhsa-gfx942.o
+  455  nvim vector_add-hip-amdgcn-amd-amdhsa-gfx942.s
+  456  ls
+  457  cd /codes/
+  458  ls
+  459  cd hip_prototypes/
+  460  ls
+  461  cd use_miopen_conv/
+  462  ls
+  463  nvim conv_add_sync_copy.cpp
+  464  ls
+  465  nvim conv_add_sync_copy.cpp
+  466  ls
+  467  make sync_copy
+  468  ls
+  469  history
+  470  rocprofv2 -i cache_counters.txt -d results -o 1024CKHW_C_after ./conv_add_sync_copy.exe false
+  471  nvim results/pmc_1/results_1024CKHW_C_after.csv
+  472  ls
+  473  nvim conv_add_sync_copy.cpp
+  474  make clean
+  475  ls
+  476  nvim conv_add_sync_copy.cpp
+  477  make clean
+  478  make sync_copy
+  479  rocprofv2 -i cache_counters.txt -d results -o 1024CKHW_C_after ./conv_add_sync_copy.exe false
+  480  nvim results/pmc_1/results_1024CKHW_C_after.csv
+  481  nvim conv_add_sync_copy.cpp
+  482  make clean
+  483  make sync_copy
+  484  rocprofv2 -i cache_counters.txt -d results -o 1024CKHW_C_after ./conv_add_sync_copy.exe false
+  485  nvim results/pmc_1/results_1024CKHW_C_after.csv
+  486  ls
+  487  nvim conv_add_sync_copy.cpp 
+  488  make clean
+  489  make sync_copy
+  490  rocprofv2 -i cache_counters.txt -d results -o 1024CKHW_C_after ./conv_add_sync_copy.exe false
+  491  nvim results/pmc_1/results_1024CKHW_C_after.csv
+  492  ls
+  493  cd ..
+  494  ls
+  495  cd ..
+  496  ls
+  497  cd hip_ls
+  498  ls
+  499  cd mi300_rocprof/
+  500  ls
+  501  nvim MI300_counters_list.txt 
+  502  d ..
+  503  ls
+  504  cd ..
+  505  ls
+  506  cd hip_prototypes/
+  507  ls
+  508  cd trivial_kernel/
+  509  ls
+  510  make clean
+  511  make
+  512  rocminfo
+  513  ls
+  514  history
+  515  rocprofv2 -i cache_counters.txt -d results conv_add_trivial_kernel.cpp 
+  516  rocprofv2 -i cache_counters.txt -d results conv_add_trivial_kernel.exe
+  517  rocprofv2 -i cache_counters.txt -d results ./conv_add_trivial_kernel.exe
+  518  nvim results/pmc_1/
+  519  nvim results/pmc_1/results_2314.csv 
+  520  export HSA_XNACK=1
+  521  rocminfo
+  522  rocprofv2 -i cache_counters.txt -d results ./conv_add_trivial_kernel.exe
+  523  nvim results/pmc_1/results_2330.csv
+  524  ls
+  525  rocprofv2 -i cache_counters.txt -d results ./conv_add_trivial_kernel.exe
+  526  nvim results/pmc_1/results_2342.csv 
+  527  ls
+  528  nvim conv_add_trivial_kernel.cpp 
+  529  make clean
+  530  make
+  531  rocprofv2 -i cache_counters.txt -d results ./conv_add_trivial_kernel.exe
+  532  nvim esults/pmc_1/results_2416.csv
+  533  nvim results/pmc_1/results_2416.csv
+  534  ls
+  535  nvim conv_add_trivial_kernel.cpp 
+  536  exit
+  537  ls
+  538  cd hip_prototypes/
+  539  ls
+  540  cd trivial_kernel/
+  541  ls
+  542  make
+  543  rocprofv2 -i cache_counters.txt -d results -o 1024CK ./conv_add_trivial_kernel.exe 1 1024 64 64 3 3 1024
+  544  nvim results/pmc_1/results_1024CK.csv
+  545  rocprofv2 -i cache_counters.txt -d results -o smallest ./conv_add_trivial_kernel.exe 1 3 64 64 3 3 1
+  546  nvim results/pmc_1/results_smallest.csv
+  547  ls
+  548  make clean
+  549  make
+  550  ls
+  551  rocprofv2 --plugin perfetto --hip-trace -d results -o events_added -i cache_counters.txt ./conv_add_trivial_kernel.exe 1 3 64 64 3 3 1
+  552  cd ~
+  553  ls
+  554  cd /codes/
+  555  ls
+  556  cd hip_prototypes/trivial_kernel/
+  557  ls
+  558  rocprof
+  559  rocprof -m
+  560  rocprof --plugin perfetto --hip-trace -d results -o events_added -i cache_counters.txt ./conv_add_trivial_kernel.exe 1 3 64 64 3 3 1
+  561  rocprof ----hip-trace -i cache_counters.txt ./conv_add_trivial_kernel.exe 1 3 64 64 3 3 1
+  562  rocprof --list-basic
+  563  rocprof --hip-trace -d results -o events_added -i cache_counters.txt ./conv_add_trivial_kernel.exe 1 3 64 64 3 3 1
+  564  rocprof --hip-trace -d results -o events_added.csv -i cache_counters.txt ./conv_add_trivial_kernel.exe 1 3 64 64 3 3 1
+  565  nvim events_added.csv
+  566  nvim events_added.stats.csv 
+  567  nvim events_added.hip_stats.csv 
+  568  nvim events_added.sysinfo.txt 
+  569  ls
+  570  cd results
+  571  ls
+  572  cd rpl_data_240326_233602_259/
+  573  ls
+  574  cd input0_results_240326_233602/
+  575  ls
+  576  cd ~
+  577  ls
+  578  exit
+  579  ls
+  580  cd hip_prototypes/
+  581  ls
+  582  cd trivial_kernel/
+  583  ls
+  584  rm -r results
+  585  rm -r *.csv
+  586  rm -r *.json
+  587  ls
+  588  rm -r *.db
+  589  ls
+  590  rm events_added.sysinfo.txt 
+  591  ls
+  592  history
+  593  rocprof --hip-trace -d results -o events_added.csv -i cache_counters.txt ./conv_add_trivial_kernel.exe 1 3 64 64 3 3 1
+  594  ls
+  595  cd results/
+  596  ls
+  597  cd rpl_data_240327_132840_24/
+  598  ls
+  599  cd ..
+  600  ls
+  601  cd ..
+  602  ls
+  603  mv events_added.* results/
+  604  ls
+  605  cd r es
+  606  ls
+  607  cd results/
+  608  ls
+  609  cd ..
+  610  ls
+  611  rm -r results/
+  612  ls
+  613  rm -r trivial_kernel/
+  614  ls
+  615  make clean
+  616  nvim conv_add_trivial_kernel.cpp 
+  617  make
+  618  ls
+  619  history
+  620  rocprofv2 -i cache_counters.txt -d results -o 1024CK ./conv_add_trivial_kernel.exe 1 1024 64 64 3 3 1024
+  621  nvim results/pmc_1/results_1024CK.csv
+  622  exit
+  623  ls
+  624  cd hip_prototypes/
+  625  ls
+  626  cd trivial_kernel/
+  627  ls
+  628  rm -r results/
+  629  ls
+  630  make
+  631  ls
+  632  rocprofv2 -i cache_counters.txt -d results -o 1024CK_wg_rev ./conv_add_trivial_kernel.exe 1 1024 64 64 3 3 1024 --wg-rev
+  633  nvim results/pmc_1/results_1024CK_wg_rev.csv
+  634  ls
+  635  make clean
+  636  /opt/rocm/bin/hipcc -std=c++17 -save-temps  -c -o conv_add_trivial_kernel.o conv_add_trivial_kernel.cpp
+  637  /opt/rocm/bin/hipcc -save-temps conv_add_trivial_kernel.o -o conv_add_trivial_kernel.exe
+  638  ls
+  639  nvim conv_add_trivial_kernel-hip-amdgcn-amd-amdhsa-gfx942.hipi 
+  640  nvim conv_add_trivial_kernel-hip-amdgcn-amd-amdhsa-gfx942.hipio
+  641  nvim conv_add_trivial_kernel-hip-amdgcn-amd-amdhsa-gfx942.o
+  642  nvim conv_add_trivial_kernel-hip-amdgcn-amd-amdhsa-gfx942.s
+  643  ls
+  644  rocprofv2 -i cache_counters.txt -d results -o 3CK_wg_rev ./conv_add_trivial_kernel.exe 1 3 64 64 3 3 3
+  645  nvim results/pmc_1/results_3CK_wg_rev.csv
+  646  ls
+  647  nvim conv_add_trivial_kernel.cpp
+  648  ls
+  649  make clean
+  650  make
+  651  nvim conv_add_trivial_kernel.cpp
+  652  make
+  653  ls
+  654  rocprofv2 -i cache_counters.txt -d results -o 1024CK_null_stream ./conv_add_trivial_kernel.exe 1 1024 64 64 3 3 1024
+  655  nvim results/pmc_1/results_1024CK_null_stream.csv
+  656  ls
+  657  rocprofv2 --plugin perfetto --hip-api -i cache_counters.txt -d results -o 1024CK_null_stream ./conv_add_trivial_kernel.exe 1 1024 64 64 3 3 1024
+  658  ls
+  659  cd /codes/1_
+  660  cd ~
+  661  ls
+  662  cd /coes
+  663  cd /codes
+  664  ls
+  665  cd AMDMIGraphX
+  666  ls
+  667  cd docker_build/
+  668  ls
+  669  rocprofv2
+  670  rocprofv2 --list-counters > counters.txt
+  671  nvim counters.txt 
+  672  ls
+  673  cd ~
+  674  ls
+  675  cd /codes/
+  676  ls
+  677  cd mi300_rocprof/
+  678  ls
+  679  nvim cache_counters_MI300.txt 
+  680  ls
+  681  nvim tcc_only_counters_MI300.txt 
+  682  nvim MI300_counters_list.txt 
+  683  ls
+  684  rocprofv2 -i tcc_only_counters_MI300.txt -o test -d results --hip-api /codes/AMDMIGraphX/docker_build/bin/driver run /codes/onnx_models/inception_v3.onnx 
+  685  ls
+  686  nvim tcc_only_counters_MI300.txt 
+  687  rocprofv2 -i tcc_only_counters_MI300.txt -o test -d results --hip-api /codes/AMDMIGraphX/docker_build/bin/driver run /codes/onnx_models/inception_v3.onnx 
+  688  ls
+  689  cd results/
+  690  ls
+  691  cd pmc_1/
+  692  ls
+  693  ncim results_test.csv 
+  694  nvim results_test.csv 
+  695  ls
+  696  cd ..
+  697  ls
+  698  cd ..
+  699  ls
+  700  cd AMDMIGraphX
+  701  ls
+  702  cd ..
+  703  ls
+  704  cd hip_prototypes/
+  705  ls
+  706  git status
+  707  ls
+  708  cd trivial_kernel/
+  709  ls
+  710  make
+  711  ls
+  712  history
+  713  rocprofv2 -i cache_counters.txt -d results_2 -o 1024CK ./conv_add_trivial_kernel.exe 1 1024 64 64 3
+  714  rocprofv2 -i cache_counters.txt -d results_2 -o 1024CK ./conv_add_trivial_kernel.exe 1024 64 64 3 3 1024
+  715  nvim results_2/pmc_1/results_1024CK.csv 
+  716  rocprofv2 -i cache_counters.txt -d results_2 -o 1024CK_WGRev ./conv_add_trivial_kernel.exe 1024 64 64 3 3 1024 --wg-rev
+  717  nvim results_2/pmc_1/results_1024CK_WGRev.csv
+  718  git status
+  719  ls
+  720  make
+  721  rocprofv2 -i cache_counters.txt -d results_2 -o conv_add_sync ./conv_add_sync.exe 1024 64 64 3 3 1024
+  722  nvim results_2/pmc_1/results_conv_add_sync.csv
+  723  rocprofv2 -i cache_counters.txt -d results_2 -o 320CK ./conv_add_trivial_kernel.exe 320 64 64 3 3 320
+  724  nvim results_2/pmc_1/results_320CK.csv
+  725  rocprofv2 -i cache_counters.txt -d results_2 -o conv_add_sync ./conv_add_sync.exe 320 64 64 3 3 320
+  726  nvim results_2/pmc_1/results_conv_add_sync.csv
+  727  rocprofv2 -i cache_counters.txt -d results_2 -o conv_add_sync ./conv_add_sync.exe 1 64 64 3 3 1
+  728  nvim results_2/pmc_1/results_conv_add_sync.csv
+  729  rocprofv2 -i cache_counters.txt -d results_2 -o conv_add_sync ./conv_add_sync.exe 1 64 64 3 3 1
+  730  nvim results_2/pmc_1/results_conv_add_sync.csv
+  731  rocprofv2 -i cache_counters.txt -d results_2 -o 320CK ./conv_add_trivial_kernel.exe 1 64 64 3 3 1
+  732  Dispatch_ID,GPU_ID,Queue_ID,PID,TID,Grid_Size,Workgroup_Size,LDS_Per_Workgroup,Scratch_Per_Workitem,Arch_VGPR,Accum_VGPR,SGPR,Wave_Size,Kernel_Name,Start_Timestamp,End_Timestamp,Correlation_ID,MemUnitBusy,TCC_HIT_sum,TCC_MISS_sum,Wavefronts
+  733  1,42807,1,1910,1910,220,220,0,0,16,0,64,64,"void naive_conv_fwd_nchw<true, float, float, float>(float const*, float const*, float*, std::array<int, 5ul>, std::array<int, 5ul>, std::array<int, 5ul>, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int) (.kd)",4309600625838096,4309668683938426,0,0.135668,194.000000,280.000000,4.000000
+  734  2,42807,1,1910,1910,220,220,0,0,12,4,32,64,"void vector_add<false, float, int>(float const*, float const*, float*, int, int, int) (.kd)",4309668683938426,4309668684516825,0,0.059967,185.000000,412.000000,4.000000
+  735  nvim results_2/pmc_1/results_320CK.csv
+  736  exi
+  737  exit
+  738  ls
+  739  cd hip_prototypes/
+  740  ls
+  741  cd conv_prefetch_add/
+  742  ls
+  743  make
+  744  make conv_prefetch_add
+  745  make clean
+  746  make conv_prefetch_add
+  747  ls
+  748  nvim Makefile 
+  749  make clean
+  750  make
+  751  ls
+  752  history
+  753  rocprofv2 -i cache_counters.txt -d results -o conv_prefetch_add ./conv_prefetch_add.exe 1024 64 64 3 3 1024
+  754  nvim cache_counters.txt 
+  755  cp ../use_miopen_conv/cache_counters.txt .
+  756  ls
+  757  nvim cache_counters.txt 
+  758  rocprofv2 -i cache_counters.txt -d results -o conv_prefetch_add ./conv_prefetch_add.exe 1024 64 64 3 3 1024
+  759  nvim results/pmc_1/results_conv_prefetch_add.csv
+  760  nvim common.hpp 
+  761  make clean
+  762  make 
+  763  nvim conv_prefetch_add.cpp 
+  764  make 
+  765  rocminfo
+  766  rocminfo > rocminfo.txt
+  767  nvim rocminfo.txt 
+  768  ls
+  769  rocprofv2 -i cache_counters.txt -d results -o conv_prefetch_add ./conv_prefetch_add.exe 228 64 64 3 3 228
+  770  nvim results/pmc_1/results_conv_prefetch_add.csv
+  771  nvim common.hpp 
+  772  ls
+  773  nvim conv_prefetch_add.cpp
+  774  make
+  775  ls
+  776  rocprofv2 -i cache_counters.txt -d results -o conv_prefetch_add_no_D ./conv_prefetch_add.exe 228 64 64 3 3 228
+  777  nvim results/pmc_1/results_conv_prefetch_add_no_D.csv
+  778  cd ..
+  779  ls
+  780  mkdir no_prefetch
+  781  cp trivial_kernel/conv_add_sync.cpp no_prefetch/
+  782  cp trivial_kernel/common.hpp no_prefetch/
+  783  cp conv_prefetch_add/cache_counters.txt no_prefetch/
+  784  cp conv_prefetch_add/cache_counters.txt mi300_cache_counters.txt
+  785  ls
+  786  cd no_prefetch/
+  787  ls
+  788  rm cache_counters.txt 
+  789  ls
+  790  nvim common.hpp 
+  791  mv conv_add_sync.cpp  no_prefetch.cpp
+  792  ls
+  793  cp ../trivial_kernel/Makefile .
+  794  ls
+  795  nvim Makefile 
+  796  ls
+  797  make
+  798  cp ../trivial_kernel/argparse.hpp .
+  799  make
+  800  make clean
+  801  make
+  802  ls
+  803  nvim common.hpp 
+  804  nvim Makefile 
+  805  ls
+  806  make clean
+  807  ls
+  808  nvim no_prefetch.cpp 
+  809  nvim Makefile 
+  810  ls
+  811  make
+  812  ls
+  813  nvim Makefile 
+  814  cd ..
+  815  ls
+  816  cd trivial_kernel/
+  817  ls
+  818  nvim Makefile 
+  819  cd ..
+  820  ls
+  821  cd no_prefetch/
+  822  ls
+  823  cp ../trivial_kernel/Makefile .
+  824  ls
+  825  nvim Makefile 
+  826  make
+  827  make clean
+  828  ls
+  829  make clean
+  830  make
+  831  cd ..
+  832  ls
+  833  cd trivial_kernel/
+  834  ls
+  835  make
+  836  cd ..
+  837  ls
+  838  cd no_prefetch/
+  839  ls
+  840  mv no_prefetch.cpp control.cpp
+  841  ls
+  842  cd ..
+  843  ls
+  844  mv no_prefetch/ control
+  845  ls
+  846  cd con
+  847  cd control/
+  848  ls
+  849  nvim control.cpp 
+  850  ls
+  851  make clean
+  852  ks
+  853  ls
+  854  nvim Makefile 
+  855  lsCMAKE
+  856  ls
+  857  make
+  858  ls
+  859  history
+  860  history > history.txt

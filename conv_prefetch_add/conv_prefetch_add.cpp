@@ -109,7 +109,6 @@ int main(int argc, char * argv[])
     data_type* gpu_W;
     data_type* gpu_B;
     data_type* gpu_C;
-    data_type* gpu_D;
     std::size_t bytes_A = A_vec.size() * sizeof(data_type);
     std::size_t bytes_W = W_vec.size() * sizeof(data_type);
     std::size_t bytes_B = B_vec.size() * sizeof(data_type);
@@ -119,7 +118,6 @@ int main(int argc, char * argv[])
     HIP_CHECK(hipMalloc(&gpu_W, bytes_W));
     HIP_CHECK(hipMalloc(&gpu_B, bytes_B));
     HIP_CHECK(hipMalloc(&gpu_C, bytes_C));
-    HIP_CHECK(hipMalloc(&gpu_D, bytes_D));
 
     // set up threads
     std::size_t block_size = 220;
@@ -130,7 +128,7 @@ int main(int argc, char * argv[])
     HIP_CHECK(hipMemcpy(gpu_W, W_vec.data(), bytes_W, hipMemcpyHostToDevice));
     HIP_CHECK(hipMemcpy(gpu_C, C_vec.data(), bytes_C, hipMemcpyHostToDevice));
     
-    auto conv_kernel = naive_conv_fwd_nchw<true, data_type, data_type, data_type>;
+    auto conv_kernel = naive_conv_prefetch_fwd_nchw<true, data_type, data_type, data_type>;
     hipLaunchKernelGGL(conv_kernel,
         dim3(conv_grid_size),
         dim3(block_size),
@@ -173,19 +171,17 @@ int main(int argc, char * argv[])
         0,
         gpu_B,
         gpu_C,
-        gpu_D,
         ip.in_height,
         ip.in_width,
         conv_output_size
     );
 
     HIP_CHECK(hipDeviceSynchronize());
-    HIP_CHECK(hipMemcpy(D_vec.data(), gpu_D, bytes_D, hipMemcpyDeviceToHost));
+    HIP_CHECK(hipMemcpy(C_vec.data(), gpu_C, bytes_C, hipMemcpyDeviceToHost));
 
     HIP_CHECK(hipFree(gpu_A));
     HIP_CHECK(hipFree(gpu_B));
     HIP_CHECK(hipFree(gpu_C));
-    HIP_CHECK(hipFree(gpu_D));
     HIP_CHECK(hipFree(gpu_W));
 	
     // Debug: ref version
