@@ -89,7 +89,6 @@ int main(int argc, char * argv[])
     std::vector<data_type> W_vec(kernel_size);
     std::vector<data_type> B_vec(conv_output_size);
     std::vector<data_type> C_vec(conv_output_size);
-    std::vector<data_type> D_vec(conv_output_size);
 
     // fill A, W, and C with random data
     std::random_device rd;
@@ -113,7 +112,6 @@ int main(int argc, char * argv[])
     std::size_t bytes_W = W_vec.size() * sizeof(data_type);
     std::size_t bytes_B = B_vec.size() * sizeof(data_type);
     std::size_t bytes_C = C_vec.size() * sizeof(data_type);
-    std::size_t bytes_D = D_vec.size() * sizeof(data_type);
     HIP_CHECK(hipMalloc(&gpu_A, bytes_A));
     HIP_CHECK(hipMalloc(&gpu_W, bytes_W));
     HIP_CHECK(hipMalloc(&gpu_B, bytes_B));

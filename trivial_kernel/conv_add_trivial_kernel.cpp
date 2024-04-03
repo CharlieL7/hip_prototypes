@@ -69,8 +69,8 @@ input_params parse_inputs(int argc, char** argv)
  * A = input tensor
  * W = kernel tensor
  * B = conv(A, W)
- * C = other constant
- * D = add(B, C)
+ * C = rand() + 1
+ * C = add(B, C)
  */
 int main(int argc, char * argv[])
 {
@@ -92,34 +92,44 @@ int main(int argc, char * argv[])
     std::vector<data_type> D_vec(conv_output_size);
 
     // fill A, W, and C with random data
+    /*
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_real_distribution<> distrib(0.0, 1.0);
     std::generate(A_vec.begin(), A_vec.end(), [&](){return distrib(gen);});
     std::generate(W_vec.begin(), W_vec.end(), [&](){return distrib(gen);});
     std::generate(C_vec.begin(), C_vec.end(), [&](){return distrib(gen);});
-    
+    */
+
     // Debug: fill with 1's and 0's
-    //std::generate(A_vec.begin(), A_vec.end(), [&](){return 1.0;});
-    //std::generate(W_vec.begin(), W_vec.end(), [&](){return 1.0;});
-    //std::generate(C_vec.begin(), C_vec.end(), [&](){return 0.0;});
+    std::generate(A_vec.begin(), A_vec.end(), [&](){return 1.0;});
+    std::generate(W_vec.begin(), W_vec.end(), [&](){return 1.0;});
+    std::generate(C_vec.begin(), C_vec.end(), [&](){return 0.0;});
+    
+    // make pinned memoery for all host memory
+    data_type* A_pinned_data;
+    data_type* W_pinned_data;
+    data_type* C_pinned_data;
+    HIP_CHECK(hipHostMalloc(&A_pinned_data, A_vec.size() * sizeof(data_type), hipHostMallocNonCoherent));
+    HIP_CHECK(hipHostMalloc(&W_pinned_data, W_vec.size() * sizeof(data_type), hipHostMallocNonCoherent));
+    HIP_CHECK(hipHostMalloc(&C_pinned_data, C_vec.size() * sizeof(data_type), hipHostMallocNonCoherent));
+    std::copy(A_vec.begin(), A_vec.end(), A_pinned_data);
+    std::copy(W_vec.begin(), W_vec.end(), W_pinned_data);
+    std::copy(C_vec.begin(), C_vec.end(), C_pinned_data);
 
     // set up device buffers
     data_type* gpu_A;
     data_type* gpu_W;
     data_type* gpu_B;
     data_type* gpu_C;
-    data_type* gpu_D;
     std::size_t bytes_A = A_vec.size() * sizeof(data_type);
     std::size_t bytes_W = W_vec.size() * sizeof(data_type);
     std::size_t bytes_B = B_vec.size() * sizeof(data_type);
     std::size_t bytes_C = C_vec.size() * sizeof(data_type);
-    std::size_t bytes_D = D_vec.size() * sizeof(data_type);
     HIP_CHECK(hipMalloc(&gpu_A, bytes_A));
     HIP_CHECK(hipMalloc(&gpu_W, bytes_W));
     HIP_CHECK(hipMalloc(&gpu_B, bytes_B));
     HIP_CHECK(hipMalloc(&gpu_C, bytes_C));
-    HIP_CHECK(hipMalloc(&gpu_D, bytes_D));
 
     // set up threads
     std::size_t block_size = 220;
@@ -130,9 +140,9 @@ int main(int argc, char * argv[])
     HIP_CHECK(hipStreamCreate(&prefetch_add_stream));
     
     // blocking copies
-    HIP_CHECK(hipMemcpy(gpu_A, A_vec.data(), bytes_A, hipMemcpyHostToDevice));
-    HIP_CHECK(hipMemcpy(gpu_W, W_vec.data(), bytes_W, hipMemcpyHostToDevice));
-    HIP_CHECK(hipMemcpy(gpu_C, C_vec.data(), bytes_C, hipMemcpyHostToDevice));
+    HIP_CHECK(hipMemcpy(gpu_A, A_pinned_data, bytes_A, hipMemcpyHostToDevice));
+    HIP_CHECK(hipMemcpy(gpu_W, W_pinned_data, bytes_W, hipMemcpyHostToDevice));
+    HIP_CHECK(hipMemcpy(gpu_C, C_pinned_data, bytes_C, hipMemcpyHostToDevice));
     
     auto conv_kernel = naive_conv_fwd_nchw<true, data_type, data_type, data_type>;
     hipLaunchKernelGGL(conv_kernel,
@@ -178,7 +188,7 @@ int main(int argc, char * argv[])
     );
 
     hipEvent_t trivial_kernel_event;
-    HIP_CHECK(hipEventCreate(&trivial_kernel_event));
+    HIP_CHECK(hipEventCreateWithFlags(&trivial_kernel_event, hipEventDisableSystemFence));
     HIP_CHECK(hipEventRecord(trivial_kernel_event, prefetch_add_stream));
 
     HIP_CHECK(hipStreamWaitEvent(0, trivial_kernel_event, 0));
@@ -195,28 +205,22 @@ int main(int argc, char * argv[])
         0,
         gpu_B,
         gpu_C,
-        gpu_D,
         ip.in_height,
         ip.in_width,
         conv_output_size
     );
 
     HIP_CHECK(hipDeviceSynchronize());
-    HIP_CHECK(hipMemcpy(D_vec.data(), gpu_D, bytes_D, hipMemcpyDeviceToHost));
+    HIP_CHECK(hipMemcpy(D_vec.data(), gpu_C, bytes_C, hipMemcpyDeviceToHost));
 
     HIP_CHECK(hipFree(gpu_A));
-    HIP_CHECK(hipFree(gpu_B));
-    HIP_CHECK(hipFree(gpu_C));
-    HIP_CHECK(hipFree(gpu_D));
     HIP_CHECK(hipFree(gpu_W));
+    HIP_CHECK(hipFree(gpu_C));
 
     HIP_CHECK(hipEventDestroy(trivial_kernel_event));
-
     HIP_CHECK(hipStreamDestroy(prefetch_add_stream));
-	
-    // Debug: ref version
-    /*
-    auto ref_vals = ref_convolution_add<data_type, data_type>(A_vec, W_vec, C_vec, ip.in_height, ip.in_width, ip.out_channels, ip.in_channels, ip.kernel_width, ip.kernel_height);
+
+    auto ref_vals = ref_convolution_add<data_type, data_type>(A_vec, W_vec, C_vec, ip.in_height, ip.in_width, ip.out_channels, ip.in_channels, ip.kernel_height, ip.kernel_width);
     
     if(
         std::equal(
@@ -233,22 +237,18 @@ int main(int argc, char * argv[])
     {
         std::cout<<"Failed!\n";
     }
-    */
 
     // Debug: print vectors
-    /*
-    std::cout << "ref: [ ";
-    for(auto x : ref_vals)
-    {
-        std::cout << x << ", ";
-    }
-    std::cout << "]\n";
-    std::cout << "gpu: [ ";
-    for(auto x : D_vec)
-    {
-        std::cout << x << ", ";
-    }
-    std::cout << "]\n";
-    */
-
+    //std::cout << "ref: [ ";
+    //for(auto x : ref_vals)
+    //{
+    //    std::cout << x << ", ";
+    //}
+    //std::cout << "]\n";
+    //std::cout << "gpu: [ ";
+    //for(auto x : D_vec)
+    //{
+    //    std::cout << x << ", ";
+    //}
+    //std::cout << "]\n";
 }

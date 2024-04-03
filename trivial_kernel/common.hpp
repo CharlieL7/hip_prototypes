@@ -171,8 +171,7 @@ __global__ void naive_conv_fwd_nchw(
 template <bool WG_REVERSAL, typename VecType, typename DimType>
 __global__ void vector_add(
     const VecType* __restrict__ a,
-    const VecType* __restrict__ b,
-    VecType* __restrict__ c,
+    VecType* __restrict__ b,
     DimType height,
     DimType width,
     DimType total_size) 
@@ -188,12 +187,11 @@ __global__ void vector_add(
     int prepend_length = bid * thread_length;
     a += prepend_length;
     b += prepend_length;
-    c += prepend_length;
     for (int tid = threadIdx.x; tid < thread_length; tid += blockDim.x)
     {
         if (tid + prepend_length < total_size)
         {
-            c[tid] = a[tid] + b[tid];
+            b[tid] = a[tid] + b[tid];
         }
     }
 }
@@ -228,8 +226,8 @@ std::vector<T> ref_convolution_add(
     std::size_t A_width,
     std::size_t out_channels,
     std::size_t in_channels,
-    std::size_t kernel_width,
-    std::size_t kernel_height
+    std::size_t kernel_height,
+    std::size_t kernel_width
 )
 {
     std::vector<T> ret(C.size());
