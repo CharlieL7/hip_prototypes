@@ -51,6 +51,7 @@ int main(int argc, char * argv[])
     data_type* gpu_A;
     std::size_t bytes_A = A_vec.size() * sizeof(data_type);
     HIP_CHECK(hipMalloc(&gpu_A, bytes_A));
+    HIP_CHECK(hipMemcpy(gpu_A, A_vec.data(), bytes_A, hipMemcpyHostToDevice));
 
     // set up threads
     std::size_t block_size = 220;
