@@ -54,7 +54,7 @@ int main(int argc, char * argv[])
     //HIP_CHECK(hipMemcpy(gpu_A, A_vec.data(), bytes_A, hipMemcpyHostToDevice));
 
     // set up threads
-    std::size_t block_size = 220;
+    std::size_t block_size = 256;
     std::size_t grid_size = (int)ceil((float)ip.N/block_size);
     
     auto add_one_kernel = add_one<float, int>;
