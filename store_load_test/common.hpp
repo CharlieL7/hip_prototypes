@@ -22,7 +22,7 @@ __global__ void add_one(
     auto idx = blockIdx.x * blockDim.x + threadIdx.x;
     if (idx < total_size)
     {
-        x[idx] = x[idx] + 1;
+        x[idx] = 0;
     }
 }
 
