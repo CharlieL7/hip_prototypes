@@ -53,7 +53,7 @@ int main(int argc, char * argv[])
     std::size_t bytes_A = A_vec.size() * sizeof(data_type);
     HIP_CHECK(hipMalloc(&gpu_A, bytes_A));
     HIP_CHECK(hipMalloc(&gpu_filler, bytes_A));
-    HIP_CHECK(hipMemset(gpu_filler, 3.14, bytes_A));
+    HIP_CHECK(hipMemset(gpu_filler, 3, bytes_A));
 
     // set up threads
     std::size_t block_size = 256;

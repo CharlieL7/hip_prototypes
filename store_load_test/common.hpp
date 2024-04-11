@@ -2,6 +2,7 @@
 #define COMMON_HPP
 
 #include <hip/hip_runtime.h>
+#include <hip/amd_detail/amd_device_functions.h>
 #include <algorithm>
 #include <vector>
 #include <array>
@@ -24,6 +25,16 @@ __global__ void set_to_zero(
     {
         x[idx] = 0;
     }
+    unsigned se_id = __builtin_amdgcn_s_getreg(
+            GETREG_IMMED(HW_ID_SE_ID_SIZE-1, HW_ID_SE_ID_OFFSET, HW_ID));
+    unsigned xcc_id = __builtin_amdgcn_s_getreg(
+            GETREG_IMMED(XCC_ID_XCC_ID_SIZE - 1, XCC_ID_XCC_ID_OFFSET, XCC_ID));
+    unsigned cu_id = __builtin_amdgcn_s_getreg(
+            GETREG_IMMED(HW_ID_CU_ID_SIZE - 1, HW_ID_CU_ID_OFFSET, HW_ID));
+    printf("workgroup number (blockIdx.x): %u, ", blockIdx.x);
+    printf("se_id : %u, ", se_id);
+    printf("xcc_id : %u, ", xcc_id);
+    printf("cu_id : %u\n", cu_id);
 }
 
 template <typename VecType, typename DimType>
