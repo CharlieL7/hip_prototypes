@@ -15,7 +15,7 @@
 }
 
 template <typename VecType, typename DimType>
-__global__ void add_one(
+__global__ void set_to_zero(
     VecType* __restrict__ x,
     DimType total_size)
 {
@@ -23,6 +23,18 @@ __global__ void add_one(
     if (idx < total_size)
     {
         x[idx] = 0;
+    }
+}
+
+template <typename VecType, typename DimType>
+__global__ void add_one(
+    VecType* __restrict__ x,
+    DimType total_size)
+{
+    auto idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx < total_size)
+    {
+        x[idx] = x[idx] + 1;
     }
 }
 

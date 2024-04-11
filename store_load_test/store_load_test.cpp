@@ -49,16 +49,17 @@ int main(int argc, char * argv[])
 
     // set up device buffers
     data_type* gpu_A;
+    data_type* gpu_filler;
     std::size_t bytes_A = A_vec.size() * sizeof(data_type);
     HIP_CHECK(hipMalloc(&gpu_A, bytes_A));
-    //HIP_CHECK(hipMemcpy(gpu_A, A_vec.data(), bytes_A, hipMemcpyHostToDevice));
+    HIP_CHECK(hipMalloc(&gpu_filler, bytes_A));
 
     // set up threads
     std::size_t block_size = 256;
     std::size_t grid_size = (int)ceil((float)ip.N/block_size);
     
-    auto add_one_kernel = add_one<float, int>;
-    hipLaunchKernelGGL(add_one_kernel,
+    auto set_to_zero_kernel = set_to_zero<float, int>;
+    hipLaunchKernelGGL(set_to_zero_kernel,
         dim3(grid_size),
         dim3(block_size),
         0,
