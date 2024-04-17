@@ -1,5 +1,5 @@
-#ifndef COMMON_HPP
-#define COMMON_HPP
+#ifndef KERNELS_HPP
+#define KERNELS_HPP
 
 #include <hip/hip_runtime.h>
 #include <hip/amd_detail/amd_device_functions.h>
@@ -16,18 +16,16 @@
 }
 
 template <typename VecType, typename DimType>
-__global__ void set_to_zero(
+__global__ void set_to_zero_debug(
     VecType* __restrict__ x,
+    unsigned* __restrict__ wg_data,
+    long long int* __restrict__ timer_data,
     DimType total_size)
 {
     if(threadIdx.x == 0)
     {
-            auto wall_time = wall_clock64();
-            unsigned smid = __smid();
-            unsigned xcc_id = smid >> 6;
-            unsigned se_id = smid & 0x30 >> 4;
-            unsigned cu_id = smid & 0xf;
-            printf("%lli, %u, %u, %u, %u\n", wall_time, blockIdx.x, xcc_id, se_id, cu_id);
+        wg_data[blockIdx.x] = __smid();
+        timer_data[blockIdx.x] = wall_clock64();
     }
     auto idx = blockIdx.x * blockDim.x + threadIdx.x;
     if (idx < total_size)
@@ -36,31 +34,17 @@ __global__ void set_to_zero(
     }
 }
 
-template <typename VecType, typename DimType>
-__global__ void add_one(
-    VecType* __restrict__ x,
-    DimType total_size)
-{
-    auto idx = blockIdx.x * blockDim.x + threadIdx.x;
-    if (idx < total_size)
-    {
-        x[idx] = x[idx] + 1;
-    }
-}
-
 template <bool WG_REVERSAL, typename VecType, typename DimType>
-__global__ void add_two(
+__global__ void add_two_debug(
     VecType* __restrict__ x,
+    unsigned* __restrict__ wg_data,
+    long long int* __restrict__ timer_data,
     DimType total_size)
 {
     if(threadIdx.x == 0)
     {
-            auto wall_time = wall_clock64();
-            unsigned smid = __smid();
-            unsigned xcc_id = smid >> 6;
-            unsigned se_id = smid & 0x30 >> 4;
-            unsigned cu_id = smid & 0xf;
-            printf("%lli, %u, %u, %u, %u\n", wall_time, blockIdx.x, xcc_id, se_id, cu_id);
+        wg_data[blockIdx.x] = __smid();
+        timer_data[blockIdx.x] = wall_clock64();
     }
     auto idx = blockIdx.x * blockDim.x + threadIdx.x;
     if constexpr(WG_REVERSAL)

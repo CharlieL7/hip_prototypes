@@ -1,0 +1,24 @@
+HIP_PATH?= $(wildcard /opt/rocm)
+HIPCC=$(HIP_PATH)/bin/hipcc
+
+SOURCES_0 = wg_scheduling_test.cpp
+OBJECTS_0 = $(SOURCES_0:.cpp=.o)
+
+EXECUTABLE_0=./wg_scheduling_test.exe
+
+.PHONY: test
+
+
+all: one
+
+one: $(EXECUTABLE_0)
+
+CXXFLAGS =-std=c++17
+CXX=$(HIPCC)
+
+$(EXECUTABLE_0): $(OBJECTS_0)
+	$(HIPCC) $(OBJECTS_0) -o $@
+
+clean:
+	rm -f $(OBJECTS_0)
+	rm -f $(EXECUTABLE_0)
