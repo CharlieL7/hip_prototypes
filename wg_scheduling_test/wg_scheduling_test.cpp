@@ -58,19 +58,25 @@ int main(int argc, char * argv[])
 
     std::vector<data_type> A_vec(ip.N);
     std::vector<data_type> D_vec(ip.N);
-    std::vector<unsigned> wg_data(grid_size);
-    std::vector<long long int> timer_data(grid_size);
+    std::vector<unsigned> wg_data_0(grid_size);
+    std::vector<long long int> timer_data_0(grid_size);
+    std::vector<unsigned> wg_data_1(grid_size);
+    std::vector<long long int> timer_data_1(grid_size);
 
     // set up device buffers
     data_type* gpu_A;
-    unsigned* gpu_wg_data;
-    long long int* gpu_timer_data;
+    unsigned* gpu_wg_data_0;
+    long long int* gpu_timer_data_0;
+    unsigned* gpu_wg_data_1;
+    long long int* gpu_timer_data_1;
     std::size_t bytes_A = A_vec.size() * sizeof(data_type);
-    std::size_t bytes_wg_data = wg_data.size() * sizeof(unsigned);
-    std::size_t bytes_timer_data = timer_data.size() * sizeof(long long int);
+    std::size_t bytes_wg_data = grid_size * sizeof(unsigned);
+    std::size_t bytes_timer_data = grid_size * sizeof(long long int);
     HIP_CHECK(hipMalloc(&gpu_A, bytes_A));
-    HIP_CHECK(hipMalloc(&gpu_wg_data, bytes_wg_data));
-    HIP_CHECK(hipMalloc(&gpu_timer_data, bytes_timer_data));
+    HIP_CHECK(hipMalloc(&gpu_wg_data_0, bytes_wg_data));
+    HIP_CHECK(hipMalloc(&gpu_timer_data_0, bytes_timer_data));
+    HIP_CHECK(hipMalloc(&gpu_wg_data_1, bytes_wg_data));
+    HIP_CHECK(hipMalloc(&gpu_timer_data_1, bytes_timer_data));
     
     auto set_to_zero_kernel = set_to_zero_debug<float, int>;
     hipLaunchKernelGGL(set_to_zero_kernel,
@@ -79,8 +85,8 @@ int main(int argc, char * argv[])
         0,
         0,
         gpu_A,
-        gpu_wg_data,
-        gpu_timer_data,
+        gpu_wg_data_0,
+        gpu_timer_data_0,
         ip.N 
     );
 
@@ -95,29 +101,44 @@ int main(int argc, char * argv[])
         0,
         0,
         gpu_A,
-        gpu_wg_data,
-        gpu_timer_data,
+        gpu_wg_data_1,
+        gpu_timer_data_1,
         ip.N
     );
 
     HIP_CHECK(hipDeviceSynchronize());
     HIP_CHECK(hipMemcpy(D_vec.data(), gpu_A, bytes_A, hipMemcpyDeviceToHost));
-    HIP_CHECK(hipMemcpy(wg_data.data(), gpu_wg_data, bytes_wg_data, hipMemcpyDeviceToHost));
-    HIP_CHECK(hipMemcpy(timer_data.data(), gpu_timer_data, bytes_timer_data, hipMemcpyDeviceToHost));
+    HIP_CHECK(hipMemcpy(wg_data_0.data(), gpu_wg_data_0, bytes_wg_data, hipMemcpyDeviceToHost));
+    HIP_CHECK(hipMemcpy(timer_data_0.data(), gpu_timer_data_0, bytes_timer_data, hipMemcpyDeviceToHost));
+    HIP_CHECK(hipMemcpy(wg_data_1.data(), gpu_wg_data_1, bytes_wg_data, hipMemcpyDeviceToHost));
+    HIP_CHECK(hipMemcpy(timer_data_1.data(), gpu_timer_data_1, bytes_timer_data, hipMemcpyDeviceToHost));
 
     HIP_CHECK(hipFree(gpu_A));
-    HIP_CHECK(hipFree(gpu_wg_data));
-    HIP_CHECK(hipFree(gpu_timer_data));
+    HIP_CHECK(hipFree(gpu_wg_data_0));
+    HIP_CHECK(hipFree(gpu_timer_data_0));
+    HIP_CHECK(hipFree(gpu_wg_data_1));
+    HIP_CHECK(hipFree(gpu_timer_data_1));
     
     // print data as a csv
     std::cout << "wall_time, blockIdx.x, xcc_id, se_id, cu_id\n";
+    std::cout << "set_zero kernel\n";
     for(int i = 0; i < grid_size; ++i)
     {
-        unsigned smid = wg_data[i];
+        unsigned smid = wg_data_0[i];
         unsigned xcc_id = smid >> 6;
         unsigned se_id = smid & 0x30 >> 4;
         unsigned cu_id = smid & 0xf;
-        std::cout << timer_data[i] << ", " << i << ", " << xcc_id << ", " << se_id << ", " << cu_id << "\n";
+        std::cout << timer_data_0[i] << ", " << i << ", " << xcc_id << ", " << se_id << ", " << cu_id << "\n";
+    }
+
+    std::cout << "\nadd_two kernel\n";
+    for(int i = 0; i < grid_size; ++i)
+    {
+        unsigned smid = wg_data_1[i];
+        unsigned xcc_id = smid >> 6;
+        unsigned se_id = smid & 0x30 >> 4;
+        unsigned cu_id = smid & 0xf;
+        std::cout << timer_data_1[i] << ", " << i << ", " << xcc_id << ", " << se_id << ", " << cu_id << "\n";
     }
 
     return 0;
